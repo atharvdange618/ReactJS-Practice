@@ -6,6 +6,7 @@ function Profile() {
     const username = localStorage.getItem('username');
 
     const handleLogout = () => {
+        console.log('User logged out', username);
         // Clear session token from browser's cookies
         localStorage.removeItem('username');
         // Redirect to the login page

@@ -1,7 +1,10 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
 const router = express.Router();
-const User = require('../models/User');
+const User = require('../models/user');
+const localStrategy = require("passport-local");
+const passport = require('passport');
+passport.use(new localStrategy(User.authenticate()));
+const url = "http://localhost:4000"
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -20,29 +23,20 @@ router.post('/register', async (req, res) => {
   }
 });
 
-router.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    const user = await User.findOne({ username: username });
-    if (user) {
-      const same = await bcrypt.compare(password, user.password);
-      if (same) {
-        req.session.username = username; // Storing user's username in the session
-        res.status(202).json({ message: 'Login Successful' });
-      } else {
-        //A response to inform the client about incorrect password
-        res.status(401).json({ message: 'Login failed: Password incorrect' });
-      }
-    } else {
-      console.log("Login failed: User not found");
-      //A response to inform the client about user not found
-      res.status(404).json({ message: 'Login failed: User not found' });
-    }
-  } catch (error) {
-    console.log("Error: " + error.message);
-    //A response to inform the client about any error that occurred
-    res.status(500).json({ message: 'Internal Server Error', error: error.message });
-  }
+router.post("/login", passport.authenticate('local', {
+  successRedirect: url + "/profile",
+  failureRedirect: url
+}));
+
+router.get("/logout", function (req, res) {
+  req.logout(function (err) {
+    if (err) { return next(err); }
+    res.redirect('/login');
+  });
 });
 
+function isLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) return next();
+  res.redirect("/login");
+}
 module.exports = router;

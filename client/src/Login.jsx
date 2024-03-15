@@ -20,10 +20,6 @@ function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setFormData({
-            username: "",
-            password: ""
-        });
         try {
             const response = await fetch('http://localhost:3000/login', {
                 method: 'POST',
@@ -33,12 +29,7 @@ function Login() {
                 body: JSON.stringify(formData) // Pass formData as the body
             });
             if (response.ok) {
-                // Retrieve the session token from the response headers
-                const sessionToken = response.headers.get('set-cookie');
-                // Store the session token in the browser's cookies
-                console.log(sessionToken);
-                document.cookie = sessionToken;
-                // Redirect to the profile page
+                console.log(response)
                 navigate('/profile');
             } else {
                 const errorData = await response.json();
