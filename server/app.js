@@ -16,7 +16,10 @@ app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(cors())
+app.use(cors({
+  origin: 'http://localhost:4000', // Allow requests from frontend server
+  credentials: true // Allow credentials (cookies) to be sent
+}));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -24,7 +27,6 @@ app.use(expressSession({
   resave: false,
   secret: "Deadpool",
   saveUninitialized: true
-
 }));
 global.loggedIn = null;
 

@@ -5,17 +5,17 @@ const bcrypt = require('bcrypt')
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  res.render('index', { title: 'Home' });
+  res.render('index', { title: 'Server' });
   console.log(req.session)
 });
 
 router.post('/register', async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-    const user = await User.create({ username, email, password });
+    const { username, email, password, userType } = req.body;
+    const user = await User.create({ username, email, password, userType });
     res.status(201).json({ message: 'User created successfully', user });
   } catch (error) {
-    console.error("Error creating user:", error);
+    console.error("Error creating user:", error.message);
     res.status(500).json({ message: 'Error creating user', error: error.message });
   }
 });
@@ -23,17 +23,28 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
-    const user = await User.findOne({ username: username })
+    const user = await User.findOne({ username: username });
     if (user) {
-      const same = await bcrypt.compare(user.password, password)
+      const same = await bcrypt.compare(password, user.password);
+      if (same) {
+        console.log("Login successful")
+        // Redirect the user to the UI running on localhost:4000
+        res.redirect('http://localhost:4000/register');
+      } else {
+        console.log("Login failed: Password incorrect")
+        //A response to inform the client about incorrect password
+        res.status(401).json({ message: 'Login failed: Password incorrect' });
+      }
     } else {
-      res.redirect('http://localhost:4000/')
+      console.log("Login failed: User not found")
+      //A response to inform the client about user not found
+      res.status(404).json({ message: 'Login failed: User not found' });
     }
   } catch (error) {
-
+    console.log("Error: " + error.message)
+    //A response to inform the client about any error that occurred
+    res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
-
-  res.redirect("/profile", { username: username })
 })
 
 module.exports = router;

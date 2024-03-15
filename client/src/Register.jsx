@@ -5,7 +5,8 @@ function Register() {
         username: '',
         email: '',
         password: '',
-        cnfPassword: ''
+        cnfPassword: '',
+        userType: ''
     });
     const [match, setMatch] = useState('');
 
@@ -68,7 +69,12 @@ function Register() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData) // Pass formData as the body
+                body: JSON.stringify({
+                    username: formData.username,
+                    email: formData.email,
+                    password: formData.password,
+                    userType: formData.userType // Include userType in the request body
+                })
             });
             if (!response.ok) {
                 throw new Error('Failed to register user');
@@ -81,7 +87,8 @@ function Register() {
             username: '',
             email: '',
             password: '',
-            cnfPassword: ''
+            cnfPassword: '',
+            userType: ''
         });
         setMatch('');
     };
@@ -97,6 +104,14 @@ function Register() {
                 <div className='mt-2'>
                     <label htmlFor="email" className='text-white'>Email:</label>
                     <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className='border-2 rounded-md px-2 py-1 w-full mt-1' />
+                </div>
+                <div className='mt-2'>
+                    <label htmlFor='user' className='text-white'>User Type:</label>
+                    <select className='ml-2 mt-2 rounded-md px-1 py-1' name="userType" value={formData.userType} onChange={handleChange}>
+                        <option value="">Select</option>
+                        <option value="admin">Admin</option>
+                        <option value="user">User</option>
+                    </select>
                 </div>
                 <div className='mt-2'>
                     <label htmlFor="password" className='text-white'>Password:</label>
