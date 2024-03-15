@@ -10,6 +10,8 @@ function Register() {
     });
     const [match, setMatch] = useState('');
 
+    const [userCnf, setUserCnf] = useState("");
+
     const passwordStrength = function (password) {
         let i = 0;
         if (password.length > 7) {
@@ -73,11 +75,14 @@ function Register() {
                     username: formData.username,
                     email: formData.email,
                     password: formData.password,
-                    userType: formData.userType // Include userType in the request body
+                    userType: formData.userType
                 })
             });
-            if (!response.ok) {
-                throw new Error('Failed to register user');
+            if (response.status === 201) { // User created successfully
+                setUserCnf("User created successfully");
+            } else if (!response.ok) {
+                const userReg = await response.json();
+                setUserCnf(userReg.message);
             }
         } catch (error) {
             console.error('Error registering user:', error);
@@ -91,6 +96,7 @@ function Register() {
             userType: ''
         });
         setMatch('');
+        setUserCnf('');
     };
 
     return (
@@ -123,6 +129,7 @@ function Register() {
                     <input type="password" id="cnfPassword" name="cnfPassword" value={formData.cnfPassword} onChange={handleChange} className='border-2 rounded-md px-2 py-1 w-full mt-1' />
                 </div>
                 {match && <p className="text-zinc-900">{match}</p>}
+                {<p className="text-zinc-900">{userCnf}</p>}
                 <br />
                 <button className='bg-green-500 rounded-md px-2 py-1 text-white' type="submit">Submit</button>
                 <h4></h4>

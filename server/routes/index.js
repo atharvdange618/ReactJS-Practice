@@ -27,9 +27,8 @@ router.post('/login', async (req, res) => {
     if (user) {
       const same = await bcrypt.compare(password, user.password);
       if (same) {
-        console.log("Login successful")
-        // Redirect the user to the UI running on localhost:4000
-        res.redirect('http://localhost:4000/register');
+        res.status(202).json({ message: 'Login Successful' });
+        console.log(req.session)
       } else {
         console.log("Login failed: Password incorrect")
         //A response to inform the client about incorrect password

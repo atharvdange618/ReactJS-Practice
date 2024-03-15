@@ -6,6 +6,8 @@ function Login() {
         password: ''
     });
 
+    const [passErr, setPassErr] = useState("");
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prevState => ({
@@ -29,7 +31,8 @@ function Login() {
                 body: JSON.stringify(formData) // Pass formData as the body
             });
             if (!response.ok) {
-                throw new Error('Failed to login');
+                const errorData = await response.json();
+                setPassErr(errorData.message);
             } else {
                 window.location.href = "http://localhost:4000/profile"
             }
@@ -51,6 +54,9 @@ function Login() {
                     <input type="password" id="password" name="password" value={formData.password} onChange={handleInputChange} className='border-2 rounded-md px-2 py-1 w-full mt-1' />
                 </div>
                 <br />
+                <div className='mb-3'>
+                    <h4>{passErr}</h4>
+                </div>
                 <button className='bg-green-500 rounded-md px-2 py-1 text-white' type="submit">Login</button>
             </form>
         </div>
