@@ -28,15 +28,12 @@ app.use(expressSession({
   secret: "Deadpool",
   saveUninitialized: true
 }));
-global.loggedIn = null;
-
-app.use("*", (req, res, next) => {
-  loggedIn = req.session.userId;
-  next();
-});
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.get('/api/userId', (req, res) => {
+  res.json({ username: req.session.username });
+});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

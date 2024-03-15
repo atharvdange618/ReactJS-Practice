@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 function Login() {
     const [formData, setFormData] = useState({
@@ -7,6 +9,7 @@ function Login() {
     });
 
     const [passErr, setPassErr] = useState("");
+    const navigate = useNavigate();
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -30,11 +33,17 @@ function Login() {
                 },
                 body: JSON.stringify(formData) // Pass formData as the body
             });
-            if (!response.ok) {
+            if (response.ok) {
+                // Retrieve the session token from the response headers
+                const sessionToken = response.headers.get('set-cookie');
+                // Store the session token in the browser's cookies
+                console.log(sessionToken);
+                document.cookie = sessionToken;
+                // Redirect to the profile page
+                navigate('/profile');
+            } else {
                 const errorData = await response.json();
                 setPassErr(errorData.message);
-            } else {
-                window.location.href = "http://localhost:4000/profile"
             }
         } catch (error) {
             console.error('Error logging in:', error);
