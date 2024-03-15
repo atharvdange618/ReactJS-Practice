@@ -100,7 +100,7 @@ function Register() {
     };
 
     return (
-        <div className='border-2 bg-blue-500 rounded-lg w-96 h-110 px-4 py-4 mx-auto flex flex-col justify-center items-center mt-2'>
+        <div className='border-2 bg-gray-600 rounded-lg w-96 h-110 px-4 py-4 mx-auto flex flex-col justify-center items-center mt-2'>
             <h2 className='text-center text-white'>Register</h2>
             <form onSubmit={handleSubmit} className='flex flex-col'>
                 <div className='mt-2'>
@@ -122,13 +122,13 @@ function Register() {
                 <div className='mt-2'>
                     <label htmlFor="password" className='text-white'>Password:</label>
                     <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} className='border-2 rounded-md px-2 py-1 w-full mt-1' />
-                    <h4>{strengthChecker(formData.password)}</h4>
+                    <h4 className='text-red-500 font-bold mt-1'>{strengthChecker(formData.password)}</h4>
                 </div>
                 <div className='mt-2'>
                     <label htmlFor="cnfPassword" className='text-white'>Confirm password:</label>
                     <input type="password" id="cnfPassword" name="cnfPassword" value={formData.cnfPassword} onChange={handleChange} className='border-2 rounded-md px-2 py-1 w-full mt-1' />
                 </div>
-                {match && <p className="text-zinc-900">{match}</p>}
+                {match && <p className="text-red-900">{match}</p>}
                 {<p className="text-zinc-900">{userCnf}</p>}
                 <br />
                 <button className='bg-green-500 rounded-md px-2 py-1 text-white' type="submit">Submit</button>

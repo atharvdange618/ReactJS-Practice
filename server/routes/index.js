@@ -1,7 +1,7 @@
-var express = require('express');
-var router = express.Router();
-const User = require("../models/user");
+const express = require('express');
 const bcrypt = require('bcrypt');
+const router = express.Router();
+const User = require('../models/User');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -30,7 +30,6 @@ router.post('/login', async (req, res) => {
         req.session.username = username; // Storing user's username in the session
         res.status(202).json({ message: 'Login Successful' });
       } else {
-        console.log("Login failed: Password incorrect");
         //A response to inform the client about incorrect password
         res.status(401).json({ message: 'Login failed: Password incorrect' });
       }
