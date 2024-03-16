@@ -8,10 +8,38 @@ function Profile() {
     const [username, setUsername] = useState('');
     const [userType, setUserType] = useState('');
     const [users, setUsers] = useState([]);
+    const [fileCaption, setFileCaption] = useState('');
+    const [selectedFile, setSelectedFile] = useState(null);
 
     const handleLogout = () => {
         console.log("User logged out");
         navigate('/login');
+    };
+
+    const handleFileCaptionChange = (e) => {
+        setFileCaption(e.target.value);
+    };
+
+    const handleFileSelection = (e) => {
+        setSelectedFile(e.target.files[0]);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('caption', fileCaption);
+
+        try {
+            const response = await axios.post('/api/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            console.log('File uploaded successfully:', response.data);
+        } catch (error) {
+            console.error('Error uploading file:', error);
+        }
     };
 
     useEffect(() => {
@@ -43,14 +71,27 @@ function Profile() {
 
     return (
         <div>
-            <div className='text-black'>Welcome to profile {username}!</div>
-            <div>User Type: {userType}</div>
+            <div className='text-black'>Welcome to your profile, {username}!</div>
+            <br />
+            <div>
+                <form className='border-2' onSubmit={handleSubmit}>
+                    <input type='text' name='fileCaption' placeholder='Caption' value={fileCaption} onChange={handleFileCaptionChange} />
+                    <br />
+                    <input type='file' name='file' onChange={handleFileSelection} />
+                    <br />
+                    <input type='text' name='username' readOnly value={username} />
+                    <br />
+                    <input type='submit' value='Upload' />
+                </form>
+            </div>
             {userType === 'admin' && (
                 <div>
                     <h2>List of Users</h2>
                     <ul>
-                        {users.map((user) => (
-                            <li key={user._id}>{user.username} ({user.userType})</li>
+                        {users.map(user => (
+                            <li key={user._id}>
+                                Username: {user.username} ({user.userType})
+                            </li>
                         ))}
                     </ul>
                 </div>

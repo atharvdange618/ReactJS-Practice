@@ -28,9 +28,9 @@ router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ username });
     if (user) {
+      const { username, userType } = user;
       const same = await bcrypt.compare(password, user.password);
       if (same) {
-        const { username, userType } = user;
         if (userType === 'admin') {
           // If the user is an admin, fetch the list of all users from MongoDB
           const users = await User.find({}, { password: 0 }); // Exclude password field
@@ -49,6 +49,21 @@ router.post("/login", async (req, res) => {
     console.error(error);
     res.status(500).send('An error occurred during login.');
   }
+});
+
+router.post("/upload", upload.single('file'), async function (req, res) {
+  if (!req.file) {
+    return res.status(404).send("no files were given");
+  }
+  const post = await postModel.create({
+    image: req.file.filename,
+    imageText: req.body.filecaption,
+    userid: user._id
+  });
+
+  user.posts.push(post._id);
+  await user.save();
+  res.status(200).send("success");
 });
 
 router.get("*", (req, res) => {
