@@ -5,18 +5,10 @@ const User = require('../models/user');
 const url = "http://localhost:4000";
 
 /* GET home page. */
-router.get('/', function (req, res) {
+router.get(url, function (req, res) {
   console.log(req.session)
   res.render('index', { title: 'Server' });
 });
-
-const checkAuth = (req, res, next) => {
-  if (req.session && req.session.user) {
-    next();
-  } else {
-    res.status(401).send('Unauthorized');
-  }
-};
 
 router.post('/register', async (req, res) => {
   try {
@@ -38,8 +30,15 @@ router.post("/login", async (req, res) => {
     if (user) {
       const same = await bcrypt.compare(password, user.password);
       if (same) {
-        req.session.user = user; // Store user in session
-        res.status(200).json({ message: 'User logged in successfully', user });
+        const { username, userType } = user;
+        if (userType === 'admin') {
+          // If the user is an admin, fetch the list of all users from MongoDB
+          const users = await User.find({}, { password: 0 }); // Exclude password field
+          res.json({ username, userType, users });
+        } else {
+          // If the user is not an admin, send the user's own profile data
+          res.status(200).json({ username, userType });
+        }
       } else {
         res.status(401).json({ message: 'Invalid password' });
       }
@@ -50,23 +49,6 @@ router.post("/login", async (req, res) => {
     console.error(error);
     res.status(500).send('An error occurred during login.');
   }
-});
-
-router.get("/logout", function (req, res) {
-  req.session.destroy(function (err) {
-    if (err) {
-      console.error(err);
-      res.status(500).send('An error occurred during logout.');
-    } else {
-      res.redirect(url + '/login');
-    }
-  });
-});
-
-// Profile API endpoint (protected)
-router.get('/api/profile', checkAuth, (req, res) => {
-  const { username, userType } = req.session.user;
-  res.json({ username, userType });
 });
 
 router.get("*", (req, res) => {

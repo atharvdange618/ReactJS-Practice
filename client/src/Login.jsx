@@ -26,15 +26,14 @@ function Login() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData) // Pass formData as the body
+                body: JSON.stringify(formData)
             });
 
             if (response.ok) {
                 const responseData = await response.json();
-                const { username, userType } = responseData.user;
-
-                // Pass data as state
-                navigate('/profile', { state: { username, userType } });
+                console.log(responseData);
+                const { username, userType, users } = responseData;
+                navigate('/profile', { state: { username, userType, users } });
             } else {
                 const errorData = await response.json();
                 setPassErr(errorData.message);
