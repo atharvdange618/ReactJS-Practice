@@ -100,41 +100,50 @@ function Register() {
     };
 
     return (
-        <div className='border-2 bg-gray-600 rounded-lg w-96 h-110 px-4 py-4 mx-auto flex flex-col justify-center items-center mt-2'>
-            <h2 className='text-center text-white'>Register</h2>
-            <form onSubmit={handleSubmit} className='flex flex-col'>
-                <div className='mt-2'>
-                    <label htmlFor="username" className='text-white'>Username:</label>
-                    <input type="text" id="username" name="username" value={formData.username} onChange={handleChange} className='border-2 rounded-md px-2 py-1 w-full mt-1' />
+        <div className="bg-gray-100 py-2 sm:py-8 flex flex-col justify-center sm:py-12">
+            <div className="relative py-2 sm:max-w-md sm:mx-auto">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-lg"></div>
+                <div className="relative px-4 py-6 bg-white shadow-lg sm:rounded-lg sm:p-8">
+                    <div className="max-w-md mx-auto">
+                        <div>
+                            <h2 className="text-lg font-semibold text-center text-gray-800">Register</h2>
+                        </div>
+                        <form onSubmit={handleSubmit} className="flex flex-col">
+                            <div className="mt-2">
+                                <label htmlFor="username" className="text-gray-800">Username:</label>
+                                <input type="text" id="username" name="username" value={formData.username} onChange={handleChange} className="border-2 rounded-md px-2 py-1 w-full mt-1" />
+                            </div>
+                            <div className="mt-2">
+                                <label htmlFor="email" className="text-gray-800">Email:</label>
+                                <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className="border-2 rounded-md px-2 py-1 w-full mt-1" />
+                            </div>
+                            <div className="mt-2">
+                                <label htmlFor="user" className="text-gray-800">User Type:</label>
+                                <select className="mt-2 rounded-md px-1 py-1" name="userType" value={formData.userType} onChange={handleChange}>
+                                    <option value="">Select</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="user">User</option>
+                                </select>
+                            </div>
+                            <div className="mt-2">
+                                <label htmlFor="password" className="text-gray-800">Password:</label>
+                                <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} className="border-2 rounded-md px-2 py-1 w-full mt-1" />
+                                <h4 className="text-sm text-red-500 font-bold mt-1">{strengthChecker(formData.password)}</h4>
+                            </div>
+                            <div className="mt-2">
+                                <label htmlFor="cnfPassword" className="text-gray-800">Confirm password:</label>
+                                <input type="password" id="cnfPassword" name="cnfPassword" value={formData.cnfPassword} onChange={handleChange} className="border-2 rounded-md px-2 py-1 w-full mt-1" />
+                            </div>
+                            {match && <p className="text-sm text-red-900">{match}</p>}
+                            {userCnf && <p className="text-sm text-red-900">{userCnf}</p>}
+                            <br />
+                            <button className="bg-green-500 rounded-md px-2 py-1 text-white" type="submit">Submit</button>
+                        </form>
+                    </div>
                 </div>
-                <div className='mt-2'>
-                    <label htmlFor="email" className='text-white'>Email:</label>
-                    <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className='border-2 rounded-md px-2 py-1 w-full mt-1' />
-                </div>
-                <div className='mt-2'>
-                    <label htmlFor='user' className='text-white'>User Type:</label>
-                    <select className='ml-2 mt-2 rounded-md px-1 py-1' name="userType" value={formData.userType} onChange={handleChange}>
-                        <option value="">Select</option>
-                        <option value="admin">Admin</option>
-                        <option value="user">User</option>
-                    </select>
-                </div>
-                <div className='mt-2'>
-                    <label htmlFor="password" className='text-white'>Password:</label>
-                    <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} className='border-2 rounded-md px-2 py-1 w-full mt-1' />
-                    <h4 className='text-red-500 font-bold mt-1'>{strengthChecker(formData.password)}</h4>
-                </div>
-                <div className='mt-2'>
-                    <label htmlFor="cnfPassword" className='text-white'>Confirm password:</label>
-                    <input type="password" id="cnfPassword" name="cnfPassword" value={formData.cnfPassword} onChange={handleChange} className='border-2 rounded-md px-2 py-1 w-full mt-1' />
-                </div>
-                {match && <p className="text-red-900">{match}</p>}
-                {<p className="text-zinc-900">{userCnf}</p>}
-                <br />
-                <button className='bg-green-500 rounded-md px-2 py-1 text-white' type="submit">Submit</button>
-                <h4></h4>
-            </form>
+            </div>
         </div>
+
     );
 }
 

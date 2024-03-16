@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const plm = require("passport-local-mongoose")
 const bcrypt = require('bcrypt');
 
 mongoose.connect("mongodb://localhost:27017/reactpractice")
@@ -25,8 +24,6 @@ const userSchema = new mongoose.Schema({
     }
 })
 
-userSchema.plugin(plm);
-
 userSchema.pre('save', async function (next) {
     try {
         const user = this;
@@ -40,5 +37,6 @@ userSchema.pre('save', async function (next) {
         return next(error);
     }
 });
+
 
 module.exports = mongoose.model('User', userSchema);
