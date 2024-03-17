@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
+import ImageGallery from './ImageGallery';
 
 function Profile() {
     const navigate = useNavigate();
@@ -28,19 +29,26 @@ function Profile() {
         e.preventDefault();
         const formData = new FormData();
         formData.append('file', selectedFile);
-        formData.append('caption', fileCaption);
+        formData.append('fileCaption', fileCaption);
+        formData.append('username', username); // Add username to the form data
 
         try {
-            const response = await axios.post('/api/upload', formData, {
+            const response = await axios.post('http://localhost:3000/upload', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                    'Content-Type': 'multipart/form-data',
+                    // You can include other headers if needed
+                },
+                withCredentials: true // Include cookies with the request
             });
-            console.log('File uploaded successfully:', response.data);
+
+            console.log(response.data.message); // Log the success message
+            console.log(response.data.post); // Log the newly created post object (if needed)
+            console.log('File uploaded successfully');
         } catch (error) {
             console.error('Error uploading file:', error);
         }
     };
+
 
     useEffect(() => {
         const { username, userType, users } = location.state || {};
@@ -70,36 +78,39 @@ function Profile() {
     }, [location.state]);
 
     return (
-        <div>
-            <div className='text-black'>Welcome to your profile, {username}!</div>
-            <br />
+        <>
             <div>
-                <form className='border-2' onSubmit={handleSubmit}>
-                    <input type='text' name='fileCaption' placeholder='Caption' value={fileCaption} onChange={handleFileCaptionChange} />
-                    <br />
-                    <input type='file' name='file' onChange={handleFileSelection} />
-                    <br />
-                    <input type='text' name='username' readOnly value={username} />
-                    <br />
-                    <input type='submit' value='Upload' />
-                </form>
-            </div>
-            {userType === 'admin' && (
+                <div className='text-black'>Welcome to your profile, {username}!</div>
+                <br />
                 <div>
-                    <h2>List of Users</h2>
-                    <ul>
-                        {users.map(user => (
-                            <li key={user._id}>
-                                Username: {user.username} ({user.userType})
-                            </li>
-                        ))}
-                    </ul>
+                    <form className='border-2' onSubmit={handleSubmit}>
+                        <input type='text' name='fileCaption' placeholder='Caption' value={fileCaption} onChange={handleFileCaptionChange} />
+                        <br />
+                        <input type='file' name='file' onChange={handleFileSelection} />
+                        <br />
+                        <input type='hidden' name='username' value={username} /> {/* Add a hidden input for username */}
+                        <br />
+                        <input className='bg-green-500 rounded-md px-2 py-1 ' type='submit' value='Upload' />
+                    </form>
                 </div>
-            )}
-            <button className='bg-red-500 rounded-md px-2 py-1 text-white' onClick={handleLogout}>
-                Logout
-            </button>
-        </div>
+                {userType === 'admin' && (
+                    <div>
+                        <h2>List of Users</h2>
+                        <ul>
+                            {users.map(user => (
+                                <li key={user._id}>
+                                    Username: {user.username} ({user.userType})
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+                <button className='bg-red-500 rounded-md px-2 py-1 text-white' onClick={handleLogout}>
+                    Logout
+                </button>
+            </div>
+            <ImageGallery/>
+        </>
     );
 }
 

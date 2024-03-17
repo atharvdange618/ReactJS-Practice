@@ -2,10 +2,14 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
-const url = "http://localhost:4000";
+const Post = require("../models/posts");
+const fileUpload = require('express-fileupload');
+
+// Enable file upload middleware
+router.use(fileUpload());
 
 /* GET home page. */
-router.get(url, function (req, res) {
+router.get('/', function (req, res) {
   console.log(req.session)
   res.render('index', { title: 'Server' });
 });
@@ -51,19 +55,46 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/upload", upload.single('file'), async function (req, res) {
-  if (!req.file) {
-    return res.status(404).send("no files were given");
-  }
-  const post = await postModel.create({
-    image: req.file.filename,
-    imageText: req.body.filecaption,
-    userid: user._id
-  });
+router.post("/upload", async (req, res) => {
+  try {
+    if (!req.files || Object.keys(req.files).length === 0) {
+      return res.status(400).send('No files were uploaded.');
+    }
 
-  user.posts.push(post._id);
-  await user.save();
-  res.status(200).send("success");
+    const { username, fileCaption } = req.body;
+
+    if (!username || !fileCaption) {
+      return res.status(400).send('Username or fileCaption missing.');
+    }
+
+    const file = req.files.file;
+
+    const post = await Post.create({
+      imageText: fileCaption,
+      image: file.data,
+      user: username // Assuming username is the user's ID or unique identifier
+    });
+
+    res.status(200).json({ message: "File uploaded successfully", post });
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    res.status(500).send("An error occurred while uploading file");
+  }
+});
+
+router.get('/images', async (req, res) => {
+  try {
+    // Fetch all posts with images from the database
+    const postsWithImages = await Post.find({ image: { $exists: true, $ne: null } }, { image: 1 });
+
+    // Extract image URLs from the posts
+    const images = postsWithImages.map(post => ({ url: post.image }));
+
+    res.json({ images });
+  } catch (error) {
+    console.error('Error fetching images:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 router.get("*", (req, res) => {

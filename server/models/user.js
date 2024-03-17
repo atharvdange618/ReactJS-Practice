@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-mongoose.connect("mongodb://localhost:27017/reactpractice")
+mongoose.connect("mongodb://localhost:27017/reactpractice");
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -21,8 +21,9 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
-    }
-})
+    },
+    posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }]
+});
 
 userSchema.pre('save', async function (next) {
     try {
@@ -37,6 +38,5 @@ userSchema.pre('save', async function (next) {
         return next(error);
     }
 });
-
 
 module.exports = mongoose.model('User', userSchema);
