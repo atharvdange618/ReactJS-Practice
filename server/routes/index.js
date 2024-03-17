@@ -2,8 +2,12 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
+const fs = require('fs');
 const Post = require("../models/posts");
 const fileUpload = require('express-fileupload');
+const path = require('path');
+const uploadDir = path.join(__dirname, '../public/images/uploads');
+const { v4: uuidv4 } = require('uuid');
 
 // Enable file upload middleware
 router.use(fileUpload());
@@ -55,30 +59,52 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/upload", async (req, res) => {
+router.post('/upload', (req, res) => {
   try {
-    if (!req.files || Object.keys(req.files).length === 0) {
-      return res.status(400).send('No files were uploaded.');
-    }
-
     const { username, fileCaption } = req.body;
+    const { file } = req.files;
 
-    if (!username || !fileCaption) {
-      return res.status(400).send('Username or fileCaption missing.');
+    if (!username || !fileCaption || !file) {
+      return res.status(400).json({ error: 'Missing required fields.' });
     }
 
-    const file = req.files.file;
+    const uploadDir = path.join(__dirname, '../public/images/uploads');
 
-    const post = await Post.create({
-      imageText: fileCaption,
-      image: file.data,
-      user: username // Assuming username is the user's ID or unique identifier
+    // Create the target directory if it doesn't exist
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    // Create a unique filename for the uploaded file
+    const uniqueFilename = uuidv4() + '-' + file.name;
+
+    // Move the uploaded file to the upload directory
+    file.mv(path.join(uploadDir, uniqueFilename), async (err) => {
+      if (err) {
+        console.error('Error moving file:', err);
+        return res.status(500).json({ error: 'Error uploading file.' });
+      }
+
+      // Construct the URL of the uploaded image
+      const imageUrl = `http://localhost:3000/images/uploads/${uniqueFilename}`;
+
+      // Create a new post document in the database
+      try {
+        const post = await Post.create({
+          imageText: fileCaption,
+          image: imageUrl,
+          user: username
+        });
+
+        res.status(200).json({ message: 'File uploaded successfully', post });
+      } catch (error) {
+        console.error('Error creating post:', error);
+        res.status(500).json({ error: 'Error creating post.' });
+      }
     });
-
-    res.status(200).json({ message: "File uploaded successfully", post });
   } catch (error) {
-    console.error("Error uploading file:", error);
-    res.status(500).send("An error occurred while uploading file");
+    console.error('Error uploading file:', error);
+    res.status(500).json({ error: 'An error occurred while uploading file.' });
   }
 });
 
