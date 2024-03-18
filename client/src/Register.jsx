@@ -134,8 +134,8 @@ function Register() {
                                 <label htmlFor="cnfPassword" className="text-gray-800">Confirm password:</label>
                                 <input type="password" id="cnfPassword" name="cnfPassword" value={formData.cnfPassword} onChange={handleChange} className="border-2 rounded-md px-2 py-1 w-full mt-1" />
                             </div>
-                            {match && <p className="text-sm text-red-900">{match}</p>}
-                            {userCnf && <p className="text-sm text-red-900">{userCnf}</p>}
+                            { <p className="text-sm text-red-900">{match}</p>}
+                            { <p className="text-sm text-red-900">{userCnf}</p>}
                             <br />
                             <button className="bg-green-500 rounded-md px-2 py-1 text-white" type="submit">Submit</button>
                         </form>
