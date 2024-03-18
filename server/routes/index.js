@@ -12,15 +12,17 @@ const { v4: uuidv4 } = require('uuid');
 router.use(fileUpload());
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('/', function (req, res) {
+  console.log(req.session)
   res.render('index', { title: 'Server' });
-  console.log(req.session);
 });
 
 router.post('/register', async (req, res) => {
   try {
     const { username, email, password, userType } = req.body;
-    const user = await User.create({ username, email, password, userType });
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const user = await User.create({ username, email, password: hashedPassword, userType });
     res.status(201).json({ message: 'User created successfully', user });
   } catch (error) {
     console.error("Error creating user:", error.message);
@@ -129,4 +131,5 @@ router.get('/images', async (req, res) => {
 router.get("*", (req, res) => {
   res.render('404');
 });
+
 module.exports = router;

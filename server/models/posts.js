@@ -6,11 +6,12 @@ const postSchema = new mongoose.Schema({
         required: true
     },
     image: {
-        type: String
+        type: String,
+        required: true
     },
     user: {
         type: String,
-        ref: 'User'
+      required: true
     },
     createdAt: {
         type: Date,
