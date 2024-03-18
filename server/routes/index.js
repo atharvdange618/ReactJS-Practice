@@ -6,7 +6,6 @@ const fs = require('fs');
 const Post = require("../models/posts");
 const fileUpload = require('express-fileupload');
 const path = require('path');
-const uploadDir = path.join(__dirname, '../public/images/uploads');
 const { v4: uuidv4 } = require('uuid');
 
 // Enable file upload middleware

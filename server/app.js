@@ -4,8 +4,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
 var indexRouter = require('./routes/index');
-var expressSession = require('express-session')
-
 var app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -23,11 +21,6 @@ app.use(cors({
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(expressSession({
-  resave: false,
-  secret: "Deadpool",
-  saveUninitialized: true
-}));
 
 app.use('/', indexRouter);
 
