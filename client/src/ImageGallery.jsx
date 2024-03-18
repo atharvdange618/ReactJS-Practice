@@ -26,6 +26,7 @@ function ImageGallery() {
                 {images.map((image, index) => (
                     <div key={index} className="relative rounded-lg">
                         <img className="object-contain w-80 h-full" src={image.url} alt={`Image ${index}`} />
+                        <p className="absolute bottom-0 left-0 right-0 bg-white bg-opacity-70 text-center">{image.text}</p>
                     </div>
                 ))}
             </div>
