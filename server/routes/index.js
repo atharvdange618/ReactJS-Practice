@@ -51,20 +51,20 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/upload", upload.single('file'), async function (req, res) {
-  if (!req.file) {
-    return res.status(404).send("no files were given");
-  }
-  const post = await postModel.create({
-    image: req.file.filename,
-    imageText: req.body.filecaption,
-    userid: user._id
-  });
+// router.post("/upload", upload.single('file'), async function (req, res) {
+//   if (!req.file) {
+//     return res.status(404).send("no files were given");
+//   }
+//   const post = await postModel.create({
+//     image: req.file.filename,
+//     imageText: req.body.filecaption,
+//     userid: user._id
+//   });
 
-  user.posts.push(post._id);
-  await user.save();
-  res.status(200).send("success");
-});
+//   user.posts.push(post._id);
+//   await user.save();
+//   res.status(200).send("success");
+// });
 
 router.get("*", (req, res) => {
   res.render('404');
