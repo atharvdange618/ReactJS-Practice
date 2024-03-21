@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+//model for storing posts
 const postSchema = new mongoose.Schema({
     imageText: {
         type: String,
@@ -11,7 +12,7 @@ const postSchema = new mongoose.Schema({
     },
     user: {
         type: String,
-      required: true
+        required: true
     },
     createdAt: {
         type: Date,

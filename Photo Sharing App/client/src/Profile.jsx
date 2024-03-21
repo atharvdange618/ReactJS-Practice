@@ -31,20 +31,20 @@ function Profile() {
         const formData = new FormData();
         formData.append('file', selectedFile);
         formData.append('fileCaption', fileCaption);
-        formData.append('username', username); // Add username to the form data
+        formData.append('username', username);
 
         try {
             const response = await axios.post('http://localhost:3000/upload', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
-                withCredentials: true // Include cookies with the request
+                withCredentials: true
             });
 
             setSuccessMsg(response.data.message);
-            console.log(success); // Log the success message
+            // console.log(success); // Log the success message
         } catch (error) {
-            console.error('Error uploading file:', error);
+            setSuccessMsg(error.message);
         }
     };
 
@@ -119,6 +119,7 @@ function Profile() {
                     </div>
                 </div>
             </div>
+            {/* User list Section for admin */}
             <div>
                 {userType === 'admin' && (
                     <div className="mt-6 ml-3">
@@ -135,10 +136,10 @@ function Profile() {
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-zinc-500">
-                                {users.map((user) => (
-                                    <tr key={user._id}>
+                                {users.map((user, index) => (
+                                    <tr key={user._id} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900 font-semibold uppercase">{user.username}</div>
+                                            <div className="text-sm text-gray-900">{user.username}</div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="text-sm text-gray-900">{user.userType}</div>

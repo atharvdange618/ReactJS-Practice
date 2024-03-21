@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 
 mongoose.connect("mongodb://localhost:27017/reactpractice");
 
+//model for storing users
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -25,6 +26,7 @@ const userSchema = new mongoose.Schema({
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }]
 });
 
+//function to hash passwords before saving them in the database
 userSchema.pre('save', async function (next) {
     try {
         const user = this;

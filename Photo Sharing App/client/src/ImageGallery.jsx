@@ -22,11 +22,11 @@ function ImageGallery() {
     return (
         <div className="image-gallery p-1 w-full h-auto mb-2">
             <h2 className="text-2xl font-bold mb-4 mt-3 px-2">Image Gallery</h2>
-            <div className="grid grid-cols-2 gap-4 mr-4">
+            <div className="grid grid-cols-2 gap-7 mr-4">
                 {images.map((image, index) => (
                     <div key={index} className="relative rounded-lg">
                         <img className="object-contain w-80 h-ful rounded" src={image.url} alt={`Image ${index}`} />
-                        <p className="absolute bottom-0 pb-1 left-0 right-0 bg-white bg-opacity-70 text-center pr-6">{image.text}</p>
+                        <p className="absolute top-38 pb-1 left-0 right-0 font-semibold text-center pr-6">{image.text}</p>
                     </div>
                 ))}
             </div>
