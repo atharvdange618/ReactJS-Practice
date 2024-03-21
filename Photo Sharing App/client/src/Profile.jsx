@@ -76,60 +76,83 @@ function Profile() {
     }, [location.state]);
 
     return (
-        <div className="container mx-auto py-8">
-            <div className="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-                <div className="px-6 py-4">
-                    <h2 className="text-xl font-bold mb-2">Welcome to your profile, {username}!</h2>
-                    <form className="mt-6" onSubmit={handleSubmit}>
-                        <div className="mb-4">
-                            <input
-                                type="text"
-                                name="fileCaption"
-                                placeholder="Caption"
-                                value={fileCaption}
-                                onChange={handleFileCaptionChange}
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <input
-                                type="file"
-                                name="file"
-                                onChange={handleFileSelection}
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            />
-                            <input type="hidden" name="username" value={username} />
-                        </div>
-                        <button
-                            type="submit"
-                            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                        >
-                            Upload
-                        </button>
-                        <h4 className="text-green-500 font-bold mt-2">{success}</h4>
-                    </form>
-                    {userType === 'admin' && (
-                        <div className="mt-6">
-                            <h2 className="text-xl font-semibold mb-2">List of Users</h2>
-                            <ul>
-                                {users.map((user) => (
-                                    <li key={user._id} className="mb-2">
-                                        <span className="font-semibold">Username:</span> {user.username} ({user.userType})
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-                    <button
-                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4"
-                        onClick={handleLogout}
-                    >
-                        Logout
-                    </button>
+        <>
+            {/* logout button */}
+            <button
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4 absolute right-1 top-16"
+                onClick={handleLogout}>
+                Logout
+            </button>
+            <h2 className="text-xl font-bold mb-2 mt-4 ml-2">Welcome to your profile, <br />{username}!</h2>
+            {/* Photo upload form */}
+            <div className="container mx-auto py-8 mt-4 flex">
+                <div className="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+                    <div className="px-4 py-4">
+                        <h2 className="text-xl font-bold mb-2">Upload Your First Memory</h2>
+                        <form className="mt-6" onSubmit={handleSubmit}>
+                            <div className="mb-4">
+                                <input
+                                    type="text"
+                                    name="fileCaption"
+                                    placeholder="Caption"
+                                    value={fileCaption}
+                                    onChange={handleFileCaptionChange}
+                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <input
+                                    type="file"
+                                    name="file"
+                                    onChange={handleFileSelection}
+                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                />
+                                <input type="hidden" name="username" value={username} />
+                            </div>
+                            <button
+                                type="submit"
+                                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                Upload
+                            </button>
+                            <h4 className="text-green-500 font-bold mt-2">{success}</h4>
+                        </form>
+                    </div>
                 </div>
             </div>
+            <div>
+                {userType === 'admin' && (
+                    <div className="mt-6 ml-3">
+                        <h2 className="text-xl font-semibold mb-2">List of Users</h2>
+                        <table className="w-3/5 divide-y divide-gray-200 border-2">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-zinc-700 uppercase tracking-wider">
+                                        Username
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-zinc-700 uppercase tracking-wider">
+                                        User Type
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-zinc-500">
+                                {users.map((user) => (
+                                    <tr key={user._id}>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="text-sm text-gray-900 font-semibold uppercase">{user.username}</div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="text-sm text-gray-900">{user.userType}</div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+            {/* Image Gallery Component */}
             <ImageGallery />
-        </div>
+        </>
     );
 }
 
