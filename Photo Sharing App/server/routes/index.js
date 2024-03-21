@@ -156,6 +156,35 @@ router.get('/images', async (req, res) => {
   }
 });
 
+router.get('/images/:username', async (req, res) => {
+  try {
+    // Find the user by their username
+    const user = await User.findOne({ username: req.params.username });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Fetch posts with images associated with the user's ID
+    const postsWithImages = await Post.find(
+      { user: user.username, image: { $exists: true, $ne: null } },
+      { image: 1, imageText: 1 }
+    );
+
+    // Extract image URLs and associated text from the posts
+    const images = postsWithImages.map(post => ({
+      url: post.image,
+      text: post.imageText,
+      user: post.user
+    }));
+
+    res.json({ images });
+  } catch (error) {
+    console.error('Error fetching images:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 // Wildcard route for wrong paths
 router.get("*", (req, res) => {
   res.render('404');

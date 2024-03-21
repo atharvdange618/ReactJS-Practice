@@ -1,15 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function ImageGallery() {
+function ImageGallery({ data }) {
     const [images, setImages] = useState([]);
 
     useEffect(() => {
-        // Fetch images from the backend
+        // Fetch images based on user role
         const fetchImages = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/images');
-                // console.log(response.data);
+                let response;
+                if (data.userType === 'admin') {
+                    console.log(data.userType);
+                    // Fetch all images for administrators
+                    response = await axios.get('http://localhost:3000/images');
+                } else if (data.username) {
+                    console.log(data.username);
+                    // Fetch images associated with the username for regular users
+                    response = await axios.get(`http://localhost:3000/images/${data.username}`);
+                } else {
+                    console.log("no usertype or username specified");
+                }
+                console.log(response.data);
                 setImages(response.data.images || []); // Ensure that images is always an array
             } catch (error) {
                 console.error('Error fetching images:', error);
@@ -17,7 +28,7 @@ function ImageGallery() {
         };
 
         fetchImages();
-    }, []);
+    }, [data]); // Include data in the dependency array
 
     return (
         <div className="image-gallery p-1 w-full h-auto mb-2">

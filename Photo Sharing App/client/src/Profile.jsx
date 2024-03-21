@@ -152,7 +152,12 @@ function Profile() {
                 )}
             </div>
             {/* Image Gallery Component */}
-            <ImageGallery />
+            {userType === 'admin' ? (
+                <ImageGallery data={{ userType: "admin" }} />
+            ) : (
+                <ImageGallery data={{ username: username }} />
+            )}
+
         </>
     );
 }
