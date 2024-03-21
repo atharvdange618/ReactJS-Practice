@@ -31,6 +31,7 @@ function Login() {
 
             if (response.ok) {
                 const responseData = await response.json();
+                console.log(responseData)
                 const { username, userType, users } = responseData;
                 navigate('/profile', { state: { username, userType, users } });
             } else {

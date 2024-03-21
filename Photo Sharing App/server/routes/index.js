@@ -59,7 +59,7 @@ router.post("/login", async (req, res) => {
           res.json({ username, userType, users });
         } else {
           // If the user is not an admin, send the user's own profile data
-          res.status(200).json({ username });
+          res.status(200).json({ username, userType });
         }
       } else {
         res.status(401).json({ message: 'Invalid password' });

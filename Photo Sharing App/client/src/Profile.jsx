@@ -119,7 +119,7 @@ function Profile() {
                     </div>
                 </div>
             </div>
-            {/* User list Section for admin */}
+            {/* User List Section */}
             <div>
                 {userType === 'admin' && (
                     <div className="mt-6 ml-3">
