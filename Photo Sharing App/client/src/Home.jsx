@@ -2,7 +2,7 @@ import React from 'react';
 
 function Home() {
     return (
-        <div className="bg-gray-100 min-h-screen flex justify-center items-center">
+        <div className="bg-gray-100 h-[600px] flex justify-center items-center">
             <div className="max-w-lg p-8 bg-white shadow-md rounded-md">
                 <h1 className="text-3xl font-semibold mb-4">Welcome to Our Social Media Platform</h1>
                 <p className="text-lg mb-4">This is a small social media platform where users can share images and connect with friends.</p>
