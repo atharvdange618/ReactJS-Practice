@@ -3,32 +3,43 @@ import axios from 'axios';
 
 function ImageGallery({ data }) {
     const [images, setImages] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
     useEffect(() => {
-        // Fetch images based on user role
         const fetchImages = async () => {
+            setLoading(true);
+            setError('');
+
             try {
                 let response;
+
                 if (data.userType === 'admin') {
-                    console.log(data.userType);
-                    // Fetch all images for administrators
                     response = await axios.get('http://localhost:3000/images');
                 } else if (data.username) {
-                    console.log(data.username);
-                    // Fetch images associated with the username for regular users
                     response = await axios.get(`http://localhost:3000/images/${data.username}`);
                 } else {
-                    console.log("no usertype or username specified");
+                    setError('No userType or username specified');
                 }
-                console.log(response.data);
-                setImages(response.data.images || []); // Ensure that images is always an array
+
+                setImages(response?.data?.images || []);
             } catch (error) {
-                console.error('Error fetching images:', error);
+                setError('Error fetching images');
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchImages();
-    }, [data]); // Include data in the dependency array
+    }, [data]);
+
+    if (loading) {
+        return <div className="text-center">Loading...</div>;
+    }
+
+    if (error) {
+        return <div className="text-center text-red-500">{error}</div>;
+    }
 
     return (
         <div className="image-gallery p-1 w-full h-auto mb-2">
@@ -36,7 +47,14 @@ function ImageGallery({ data }) {
             <div className="grid grid-cols-2 gap-7 mr-4">
                 {images.map((image, index) => (
                     <div key={index} className="relative rounded-lg">
-                        <img className="object-contain w-80 h-ful rounded" src={image.url} alt={`Image ${index}`} />
+                        <img
+                            className="object-contain w-80 h-full rounded"
+                            src={image.url}
+                            alt={`Image ${index}`}
+                            onError={(e) => {
+                                e.target.src = 'path/to/placeholder-image.jpg'; // Replace with your placeholder image path
+                            }}
+                        />
                         <p className="absolute top-38 pb-1 left-0 right-0 font-semibold text-center pr-6">{image.text}</p>
                     </div>
                 ))}
