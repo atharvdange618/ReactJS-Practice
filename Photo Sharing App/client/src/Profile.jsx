@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
-import ImageGallery from './ImageGallery';
 
-function Profile() {
+const Profile = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [username, setUsername] = useState('');
@@ -11,10 +10,14 @@ function Profile() {
     const [users, setUsers] = useState([]);
     const [fileCaption, setFileCaption] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
-    const [success, setSuccessMsg] = useState("");
+    const [success, setSuccessMsg] = useState('');
+
+    const [showUploadModal, setShowUploadModal] = useState(false);
+    const [previewImage, setPreviewImage] = useState(null);
+    const [images, setImages] = useState([]);
 
     const handleLogout = () => {
-        console.log("User logged out");
+        console.log('User logged out');
         navigate('/login');
     };
 
@@ -23,7 +26,17 @@ function Profile() {
     };
 
     const handleFileSelection = (e) => {
-        setSelectedFile(e.target.files[0]);
+        const file = e.target.files[0];
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+            setSelectedFile(file);
+            setPreviewImage(reader.result);
+        };
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -38,13 +51,56 @@ function Profile() {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
-                withCredentials: true
             });
 
             setSuccessMsg(response.data.message);
-            // console.log(success); // Log the success message
+
+            const newImage = {
+                id: images.length + 1,
+                src: response.data.imageUrl,
+                alt: `Uploaded by ${username}`,
+                caption: fileCaption,
+            };
+
+            setImages([...images, newImage]);
+            setSelectedFile(null);
+            setFileCaption('');
+            setPreviewImage(null);
+            setShowUploadModal(false);
         } catch (error) {
             setSuccessMsg(error.message);
+        }
+    };
+
+    const fetchPublicImages = async () => {
+        try {
+            const response = await axios.get('http://localhost:3000/images');
+            console.log(response)
+            setImages(response.data.images.map((image, index) => ({
+                id: index + 1,
+                src: image.url,
+                alt: image.text,
+                caption: image.text,
+                user: image.user
+            })));
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const fetchPrivateImages = async () => {
+        try {
+            const response = await axios.get(`http://localhost:3000/images/${username}`);
+            console.log(response)
+            setImages(response.data.images.map((image, index) => ({
+                id: index + 1,
+                src: image.url,
+                alt: image.text,
+                caption: image.text,
+                user: image.user
+            })));
+        } catch (error) {
+            console.error(error);
         }
     };
 
@@ -58,48 +114,55 @@ function Profile() {
                 setUsers(users);
             }
         } else {
-            const fetchProfileData = async () => {
-                try {
-                    const response = await axios.get('/api/profile');
-                    setUsername(response.data.username);
-                    setUserType(response.data.userType);
-                    if (response.data.users) {
-                        setUsers(response.data.users);
-                    }
-                } catch (error) {
-                    console.error(error);
-                }
-            };
-
-            fetchProfileData();
+            console.error("error fetching user");
         }
     }, [location.state]);
 
+    useEffect(() => {
+        fetchPublicImages();
+    }, []);
+
     return (
         <>
-            {/* logout button */}
             <button
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4 absolute right-1 top-16"
-                onClick={handleLogout}>
+                onClick={handleLogout}
+            >
                 Logout
             </button>
-            <h2 className="text-xl font-bold mb-2 mt-4 ml-2">Welcome to your profile, <br />{username}!</h2>
-            {/* Photo upload form */}
-            <div className="container mx-auto py-8 mt-4 flex">
-                <div className="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-                    <div className="px-4 py-4">
-                        <h2 className="text-xl font-bold mb-2">Upload Your First Memory</h2>
-                        <form className="mt-6" onSubmit={handleSubmit}>
-                            <div className="mb-4">
-                                <input
-                                    type="text"
-                                    name="fileCaption"
-                                    placeholder="Caption"
-                                    value={fileCaption}
-                                    onChange={handleFileCaptionChange}
-                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                />
-                            </div>
+            <div className="bg-white p-3 flex flex-col items-center">
+                <div className="w-32 h-32 rounded-full mx-auto mb-4">
+                    <img
+                        src="https://i.pinimg.com/564x/f4/6f/96/f46f96bb3be87e0aa80e179961b9551d.jpg"
+                        className="w-full h-full rounded-full object-cover"
+                    />
+                </div>
+                <h2 className="text-center text-lg font-semibold">{username}</h2>
+                <h4 className="text-center">{userType}</h4>
+                <button className="bg-slate-400 w-24 p-1 rounded-md font-semibold mt-1">Edit profile</button>
+                <button className="bg-slate-400 w-24 p-1 rounded-md font-semibold mt-1" onClick={() => setShowUploadModal(true)}>Add Pin</button>
+                <div>
+                    <hr className='m-2 font-bold h-0.5 bg-black' />
+                    <button className="bg-slate-400 w-20 p-1 rounded-md font-semibold mt-1 mr-1 ml-1" onClick={fetchPublicImages}>Public</button>
+                    <button className="bg-slate-400 w-20 p-1 rounded-md font-semibold mt-1 mb-4" onClick={fetchPrivateImages}>Private</button>
+                    <div className="mt-1">
+                        <div className="flex flex-wrap justify-around items-start mb-12 md:ml-6">
+                            {images.map((image) => (
+                                <div key={image.id} className="flex flex-col items-center">
+                                    <div className="w-52 h-56 m-2 bg-slate-200 rounded-md relative">
+                                        <img className="w-full h-full rounded-md object-cover" src={image.src} alt={image.alt} />
+                                    </div>
+                                    <h3 className="mt-2 px-2 py-1 font-semibold text-[16px]">{image.caption}</h3>
+                                    <p className="px-2 py-1 text-[14px] text-gray-500">Posted by: {image.user}</p> {/* Display the username */}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+                {showUploadModal && (
+                    <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
+                        <div className="bg-white p-4 rounded-md">
+                            <h2 className="text-lg font-semibold mb-4">Upload Image</h2>
                             <div className="mb-4">
                                 <input
                                     type="file"
@@ -109,57 +172,26 @@ function Profile() {
                                 />
                                 <input type="hidden" name="username" value={username} />
                             </div>
-                            <button
-                                type="submit"
-                                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                                Upload
-                            </button>
-                            <h4 className="text-green-500 font-bold mt-2">{success}</h4>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            {/* User List Section */}
-            <div>
-                {userType === 'admin' && (
-                    <div className="mt-6 ml-3">
-                        <h2 className="text-xl font-semibold mb-2">List of Users</h2>
-                        <table className="w-3/5 divide-y divide-gray-200 border-2">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-zinc-700 uppercase tracking-wider">
-                                        Username
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-zinc-700 uppercase tracking-wider">
-                                        User Type
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-zinc-500">
-                                {users.map((user, index) => (
-                                    <tr key={user._id} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">{user.username}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">{user.userType}</div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                            {previewImage && (
+                                <div className="w-52 h-56 m-2 bg-slate-200 rounded-md">
+                                    <img className="w-full h-full rounded-md object-cover" src={previewImage} alt="Preview" />
+                                </div>
+                            )}
+                            <input
+                                type="text"
+                                placeholder="Enter caption..."
+                                className="border p-2 rounded-md w-full mt-2"
+                                value={fileCaption}
+                                onChange={handleFileCaptionChange}
+                            />
+                            <button className="bg-slate-400 w-24 p-1 rounded-md font-semibold mt-2" onClick={handleSubmit}>Upload</button>
+                            <button className="bg-red-400 w-24 p-1 rounded-md font-semibold mt-2 ml-2" onClick={() => setShowUploadModal(false)}>Cancel</button>
+                        </div>
                     </div>
                 )}
             </div>
-            {/* Image Gallery Component */}
-            {userType === 'admin' ? (
-                <ImageGallery data={{ userType: "admin" }} />
-            ) : (
-                <ImageGallery data={{ username: username }} />
-            )}
-
         </>
     );
-}
+};
 
 export default Profile;
