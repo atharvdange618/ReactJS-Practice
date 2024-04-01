@@ -140,13 +140,14 @@ router.get('/images', async (req, res) => {
     // Fetch all posts with images from the database
     const postsWithImages = await Post.find(
       { image: { $exists: true, $ne: null } },
-      { image: 1, imageText: 1 }
+      { image: 1, imageText: 1, user: 1 }
     );
 
     // Extract image URLs and associated text from the posts
     const images = postsWithImages.map(post => ({
       url: post.image,
-      text: post.imageText
+      text: post.imageText,
+      user: post.user
     }));
 
     res.json({ images });

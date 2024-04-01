@@ -32,8 +32,8 @@ function Navbar() {
                     <Link to="/about" className="block mt-4 lg:inline-block lg:mt-0 text-black hover:text-white mr-4" onClick={toggleMenu}>
                         About
                     </Link>
-                    <Link to="/services" className="block mt-4 lg:inline-block lg:mt-0 text-black hover:text-white" onClick={toggleMenu}>
-                        Services
+                    <Link to="/contact" className="block mt-4 lg:inline-block lg:mt-0 text-black hover:text-white" onClick={toggleMenu}>
+                        Contact
                     </Link>
                 </div>
                 <div>
