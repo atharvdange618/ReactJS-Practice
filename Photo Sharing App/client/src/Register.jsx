@@ -98,7 +98,7 @@ function Register() {
     return (
         <>
             <Toaster />
-            <div className='flex h-full'>
+            <div className='flex h-screen'>
                 {/* Left Pane */}
                 <div className='hidden lg:flex items-center justify-center flex-1 bg-white text-black'>
                     <div className='max-w-md text-center'>

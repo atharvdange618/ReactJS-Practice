@@ -12,10 +12,10 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:4000', // Allow requests from frontend server
-  credentials: true // Allow credentials (cookies) to be sent
+  origin: 'http://localhost:4000',
+  credentials: true
 }));
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);

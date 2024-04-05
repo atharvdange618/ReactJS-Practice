@@ -26,27 +26,25 @@ function Login() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
+                credentials: 'include'
             });
 
             if (response.ok) {
-                const responseData = await response.json();
-                const { username, userType, users } = responseData;
+                const { token, username, userType, users } = await response.json();
+                localStorage.setItem('token', token); // Store JWT token
                 navigate('/profile', { state: { username, userType, users } });
-            } else {
-                const errorData = await response.json();
-                toast.error(errorData.message);
             }
         } catch (error) {
-            console.error('Error logging in:', error);
-            toast.error('Error logging in');
+            toast.error('Error logging in:', error);
         }
     };
+
 
     return (
         <>
             <Toaster />
-            <div className='flex h-full'>
+            <div className='flex h-screen'>
                 {/* Left Pane */}
                 <div className='hidden lg:flex items-center justify-center flex-1 bg-white text-black'>
                     <div className='max-w-md text-center'>

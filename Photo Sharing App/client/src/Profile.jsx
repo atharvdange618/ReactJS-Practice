@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const Profile = () => {
@@ -7,17 +8,14 @@ const Profile = () => {
     const location = useLocation();
     const [username, setUsername] = useState('');
     const [userType, setUserType] = useState('');
-    const [users, setUsers] = useState([]);
+    const [images, setImages] = useState([]);
     const [fileCaption, setFileCaption] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
-    const [success, setSuccessMsg] = useState('');
-
-    const [showUploadModal, setShowUploadModal] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
-    const [images, setImages] = useState([]);
+    const [showUploadModal, setShowUploadModal] = useState(false);
 
     const handleLogout = () => {
-        console.log('User logged out');
+        localStorage.removeItem('token');
         navigate('/login');
     };
 
@@ -34,13 +32,12 @@ const Profile = () => {
             setPreviewImage(reader.result);
         };
 
-        if (file) {
-            reader.readAsDataURL(file);
-        }
+        file && reader.readAsDataURL(file);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         const formData = new FormData();
         formData.append('file', selectedFile);
         formData.append('fileCaption', fileCaption);
@@ -48,12 +45,10 @@ const Profile = () => {
 
         try {
             const response = await axios.post('http://localhost:3000/upload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                headers: { 'Content-Type': 'multipart/form-data' },
             });
 
-            setSuccessMsg(response.data.message);
+            toast.success(response.data.message);
 
             const newImage = {
                 id: images.length + 1,
@@ -68,14 +63,13 @@ const Profile = () => {
             setPreviewImage(null);
             setShowUploadModal(false);
         } catch (error) {
-            setSuccessMsg(error.message);
+            toast.error(error.message);
         }
     };
 
-    const fetchPublicImages = async () => {
+    const fetchImages = async (endpoint) => {
         try {
-            const response = await axios.get('http://localhost:3000/images');
-            console.log(response)
+            const response = await axios.get(endpoint);
             setImages(response.data.images.map((image, index) => ({
                 id: index + 1,
                 src: image.url,
@@ -84,46 +78,29 @@ const Profile = () => {
                 user: image.user
             })));
         } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const fetchPrivateImages = async () => {
-        try {
-            const response = await axios.get(`http://localhost:3000/images/${username}`);
-            console.log(response)
-            setImages(response.data.images.map((image, index) => ({
-                id: index + 1,
-                src: image.url,
-                alt: image.text,
-                caption: image.text,
-                user: image.user
-            })));
-        } catch (error) {
-            console.error(error);
+            toast.error(error.message);
         }
     };
 
     useEffect(() => {
-        const { username, userType, users } = location.state || {};
+        const { username, userType } = location.state || {};
 
         if (username && userType) {
             setUsername(username);
             setUserType(userType);
-            if (users) {
-                setUsers(users);
-            }
         } else {
-            console.error("error fetching user");
+            toast.error("Error fetching user");
         }
     }, [location.state]);
 
     useEffect(() => {
-        fetchPublicImages();
+        fetchImages('http://localhost:3000/images');
     }, []);
 
     return (
         <>
+            {/* profile component */}
+            <Toaster />
             <button
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4 absolute right-1 top-16"
                 onClick={handleLogout}
@@ -135,16 +112,18 @@ const Profile = () => {
                     <img
                         src="https://i.pinimg.com/564x/f4/6f/96/f46f96bb3be87e0aa80e179961b9551d.jpg"
                         className="w-full h-full rounded-full object-cover"
+                        alt="Profile"
                     />
                 </div>
                 <h2 className="text-center text-lg font-semibold">{username}</h2>
                 <h4 className="text-center">{userType}</h4>
                 <button className="bg-slate-400 w-24 p-1 rounded-md font-semibold mt-1">Edit profile</button>
                 <button className="bg-slate-400 w-24 p-1 rounded-md font-semibold mt-1" onClick={() => setShowUploadModal(true)}>Add Pin</button>
+                {/* image gallery */}
                 <div>
                     <hr className='m-2 font-bold h-0.5 bg-black' />
-                    <button className="bg-slate-400 w-20 p-1 rounded-md font-semibold mt-1 mr-1 ml-1" onClick={fetchPublicImages}>Public</button>
-                    <button className="bg-slate-400 w-20 p-1 rounded-md font-semibold mt-1 mb-4" onClick={fetchPrivateImages}>Private</button>
+                    <button className="bg-slate-400 w-20 p-1 rounded-md font-semibold mt-1 mr-1 ml-1" onClick={() => fetchImages('http://localhost:3000/images')}>Public</button>
+                    <button className="bg-slate-400 w-20 p-1 rounded-md font-semibold mt-1 mb-4" onClick={() => fetchImages(`http://localhost:3000/images/${username}`)}>Private</button>
                     <div className="mt-1">
                         <div className="flex flex-wrap justify-around items-start mb-12 md:ml-6">
                             {images.map((image) => (
@@ -153,12 +132,13 @@ const Profile = () => {
                                         <img className="w-full h-full rounded-md object-cover" src={image.src} alt={image.alt} />
                                     </div>
                                     <h3 className="mt-2 px-2 py-1 font-semibold text-[16px]">{image.caption}</h3>
-                                    <p className="px-2 py-1 text-[14px] text-gray-500">Posted by: {image.user}</p> {/* Display the username */}
+                                    <p className="px-2 py-1 text-[14px] text-gray-500">Posted by: {image.user}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </div>
+                {/* modal */}
                 {showUploadModal && (
                     <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
                         <div className="bg-white p-4 rounded-md">
@@ -170,7 +150,6 @@ const Profile = () => {
                                     onChange={handleFileSelection}
                                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                 />
-                                <input type="hidden" name="username" value={username} />
                             </div>
                             {previewImage && (
                                 <div className="w-52 h-56 m-2 bg-slate-200 rounded-md">
