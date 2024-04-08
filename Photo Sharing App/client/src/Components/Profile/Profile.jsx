@@ -9,7 +9,7 @@ const Profile = () => {
     const location = useLocation();
     const [username, setUsername] = useState('');
     const [userType, setUserType] = useState('');
-    const [showUploadModal, setShowUploadModal] = useState(false); // Define showUploadModal state
+    const [showUploadModal, setShowUploadModal] = useState(false); 
 
     const handleLogout = () => {
         localStorage.removeItem('token');
