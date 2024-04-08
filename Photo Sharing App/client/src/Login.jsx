@@ -7,7 +7,6 @@ function Login() {
         username: '',
         password: ''
     });
-
     const navigate = useNavigate();
 
     const handleInputChange = (e) => {
@@ -34,11 +33,23 @@ function Login() {
                 const { token, username, userType, users } = await response.json();
                 localStorage.setItem('token', token); // Store JWT token
                 navigate('/profile', { state: { username, userType, users } });
+            } else {
+                // Handle specific HTTP errors
+                if (response.status === 401) {
+                    // Unauthorized: Invalid credentials
+                    toast.error('Invalid username or password. Please try again.');
+                } else {
+                    // Other HTTP errors
+                    toast.error('An unexpected error occurred. Please try again later.');
+                }
             }
         } catch (error) {
-            toast.error('Error logging in:', error);
+            // Handle network errors
+            console.error('Error logging in:', error);
+            toast.error('Network error. Please check your internet connection.');
         }
     };
+
 
 
     return (

@@ -14,8 +14,11 @@ const Profile = () => {
     const [previewImage, setPreviewImage] = useState(null);
     const [showUploadModal, setShowUploadModal] = useState(false);
 
+    // Function to handle logout
     const handleLogout = () => {
+        // Clear JWT token from localStorage (or sessionStorage if you are using it)
         localStorage.removeItem('token');
+        // Redirect user to the login page
         navigate('/login');
     };
 
@@ -88,8 +91,6 @@ const Profile = () => {
         if (username && userType) {
             setUsername(username);
             setUserType(userType);
-        } else {
-            toast.error("Error fetching user");
         }
     }, [location.state]);
 

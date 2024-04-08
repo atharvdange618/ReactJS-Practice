@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import classnames from 'classnames';
+import { Link, NavLink } from 'react-router-dom';
 
 const menuItems = [
     { label: 'Home', path: '/' },
@@ -34,17 +33,18 @@ function Navbar({ isLoggedIn }) {
                     </svg>
                 </button>
             </div>
-            <div className={classnames('w-full', { 'block': isOpen, 'hidden': !isOpen }, 'block flex-grow lg:flex lg:items-center lg:w-auto')}>
+            <div className={`w-full ${isOpen ? 'block' : 'hidden'} lg:flex lg:items-center lg:w-auto`}>
                 <div className="text-sm lg:flex-grow">
                     {menuItems.map((item, index) => (
-                        <Link
+                        <NavLink
                             key={index}
                             to={item.path}
+                            activeclassname="text-white"
                             className="block mt-4 lg:inline-block lg:mt-0 text-black hover:text-white mr-4"
                             onClick={toggleMenu}
                         >
                             {item.label}
-                        </Link>
+                        </NavLink>
                     ))}
                 </div>
                 <div>
@@ -62,12 +62,12 @@ function Navbar({ isLoggedIn }) {
     );
 }
 
-const AuthLink = ({ to, text }) => (
+const AuthLink = (props) => (
     <Link
-        to={to}
-        className="inline-block text-sm px-4 py-2 leading-none border rounded text-black border-black hover:border-transparent hover:text-white hover:bg-black mt-4 lg:mt-0"
+        to={props.to}
+        className="inline-block text-sm px-4 ml-2 py-2 leading-none border rounded text-black border-black hover:border-transparent hover:text-white hover:bg-black mt-4 lg:mt-0"
     >
-        {text}
+        {props.text}
     </Link>
 );
 

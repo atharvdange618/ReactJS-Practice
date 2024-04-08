@@ -5,6 +5,7 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { setUser, getUser } = require('../services/auth')
 require('dotenv').config()
 
 function homePage(req, res) {
@@ -32,10 +33,11 @@ async function handleLogin(req, res) {
             const { _id, username, userType, password: hashedPassword } = user;
             const same = await bcrypt.compare(password, hashedPassword);
             if (same) {
-                const token = jwt.sign({ userId: _id, username, userType }, process.env.JWT_SECRET, { expiresIn: '1h' });
+                const token = setUser(user)
                 if (userType === 'admin') {
                     // If the user is an admin, fetch the list of all users from MongoDB
                     const users = await User.find({}, { password: 0 });
+                    res.cookie("uid", token)
                     res.json({ token, username, userType, users });
                 } else {
                     // If the user is not an admin, send the user's own profile data
