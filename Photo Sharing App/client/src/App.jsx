@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import './App.css';
-import Navbar from './Navbar';
-import Home from './Home';
-import Register from './Register';
-import Login from './Login';
-import Profile from './Profile';
-import Page404 from './Page404';
+import Navbar from './Components/Navbar/Navbar';
+import Home from './Components/Home/Home';
+import Register from './Components/Register/Register';
+import Login from './Components/Login/Login';
+import Profile from './Components/Profile/Profile';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -15,7 +14,7 @@ function App() {
     // Check if the user is logged in on initial render
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token); // Convert token to boolean
-  }, []);
+  }, [], isLoggedIn);
 
   return (
     <>
@@ -30,7 +29,6 @@ function App() {
             <Route path='/login' element={<Login />} />
           </>
         )}
-        <Route path='*' element={<Page404 />} />
       </Routes>
     </>
   );
