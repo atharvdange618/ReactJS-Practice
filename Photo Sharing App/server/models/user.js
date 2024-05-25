@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-mongoose.connect("mongodb+srv://atharvdangedev:<password>@cluster0.bxjpvk9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
-    dbName: "RESTAURANT_APPLICATION"
+mongoose.connect("mongodb+srv://atharvdangedev:39ylEt0TDM8SPig0@cluster0.bxjpvk9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
+    dbName: "Photo Sharing App"
 }).then(() => {
     console.log("Connected to the database")
 }).catch((err) => {
