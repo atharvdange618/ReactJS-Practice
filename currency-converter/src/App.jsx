@@ -1,29 +1,29 @@
-import React, { useState } from 'react'
-import './App.css'
-import { Input } from './Components'
-import useCurrencyInfo from './hooks/useCurrencyInfo'
+import React, { useState } from 'react';
+import './App.css';
+import Input from './Components/Input';
+import useCurrencyInfo from './hooks/useCurrencyInfo';
 
-const App = () => {
-  // Set states
-  const [amount, setAmount] = useState(0)
-  const [from, setFrom] = useState("usd")
-  const [to, setTo] = useState("inr")
-  const [convertedAmout, setConvertedAmout] = useState(0)
+function App() {
+  const [amount, setAmount] = useState(0);
+  const [from, setFrom] = useState("usd");
+  const [to, setTo] = useState("inr");
+  const [convertedAmount, setConvertedAmount] = useState(0);
 
-  const currencyInfo = useCurrencyInfo(from)
+  const currencyInfo = useCurrencyInfo(from);
 
-  const options = Object.keys(currencyInfo)
+  const options = Object.keys(currencyInfo);
 
   const swap = () => {
-    setFrom(to)
-    setTo(from)
-    setConvertedAmout(amount)
-    setAmount(convertedAmout)
-  }
+    setFrom(to);
+    setTo(from);
+    setConvertedAmount(amount);
+    setAmount(convertedAmount);
+  };
 
   const convert = () => {
-    setConvertedAmout(amount * currencyInfo[to])
-  }
+    setConvertedAmount(amount * currencyInfo[to]);
+  };
+
   return (
     <div
       className="w-full h-screen flex flex-wrap justify-center items-center bg-cover bg-no-repeat"
@@ -36,7 +36,7 @@ const App = () => {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              convert()
+              convert();
             }}
           >
             <div className="w-full mb-1">
@@ -44,9 +44,9 @@ const App = () => {
                 label="From"
                 amount={amount}
                 currencyOptions={options}
-                onCurrencyChange={(currency) => setAmount(currency)}
+                onCurrencyChange={(currency) => setFrom(currency)}
                 selectCurrency={from}
-                onAmountChange={(amount)=>setAmount(amount)}
+                onAmountChange={(amount) => setAmount(amount)}
               />
             </div>
             <div className="relative w-full h-0.5">
@@ -61,7 +61,7 @@ const App = () => {
             <div className="w-full mt-1 mb-4">
               <Input
                 label="To"
-                amount={convertedAmout}
+                amount={convertedAmount}
                 currencyOptions={options}
                 onCurrencyChange={(currency) => setTo(currency)}
                 selectCurrency={to}
