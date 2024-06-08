@@ -2,7 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { verifyToken } = require('../middleware/auth');
+const { verifyToken } = require('../Middleware/auth');
 const controller = require('../Controller/controller');
 
 // Apply JWT token verification middleware to all routes in this file

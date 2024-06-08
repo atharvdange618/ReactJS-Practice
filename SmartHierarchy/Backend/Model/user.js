@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
-const plm = require('passport-local-mongoose');
 
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
+    username: {
+        type: String,
+        required: true,
+        unique: true
+    },
     name: {
         type: String,
         required: true
@@ -12,6 +16,10 @@ const userSchema = new Schema({
         type: String,
         required: true,
         unique: true
+    },
+    password: {
+        type: String,
+        required: true
     },
     status: {
         type: String,
@@ -26,7 +34,7 @@ const userSchema = new Schema({
         enum: ['admin', 'user'],
         required: true
     },
-    profilePic: {
+    imageUrl: {
         type: String,
         required: true
     },
@@ -39,9 +47,6 @@ const userSchema = new Schema({
         ref: 'User'
     }
 });
-
-// Plugin passportLocalMongoose into the schema
-userSchema.plugin(plm);
 
 const User = mongoose.model('User', userSchema);
 
