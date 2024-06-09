@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const cookieParser = require('cookie-parser');
 const routes = require('./Routes/routes')
 const connectDB = require('./db')
 const fileUpload = require('express-fileupload');
@@ -10,8 +11,10 @@ require('dotenv').config()
 
 app.use(express.static('public'));
 
+app.use(cookieParser());
+
 const PORT = process.env.PORT
-const passport = require('passport');
+// const passport = require('passport');
 // const User = require('./Model/user');
 
 // Middleware for parsing multipart/form-data (file uploads)
@@ -34,11 +37,11 @@ app.set("view engine", 'ejs')
 
 connectDB();
 
-// app.use(require('express-session')({
-//     secret: process.env.SECRET_KEY,
-//     resave: false,
-//     saveUninitialized: false
-// }));
+app.use(require('express-session')({
+    secret: process.env.SECRET_KEY,
+    resave: false,
+    saveUninitialized: false
+}));
 
 // app.use(passport.initialize());
 // app.use(passport.session());
@@ -48,7 +51,7 @@ connectDB();
 // passport.deserializeUser(User.deserializeUser());
 
 app.use('/', routes); // Non-protected routes
-// app.use('/auth', protectedRoutes); // Protected routes
+app.use('/auth', protectedRoutes); // Protected routes
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)

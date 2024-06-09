@@ -1,5 +1,3 @@
-// protectedRoutes.js
-
 const express = require('express');
 const router = express.Router();
 const { verifyToken } = require('../Middleware/auth');
@@ -24,9 +22,12 @@ router.patch('/administrator/edit', controller.editAdministrator);
 router.get('/user', controller.userPanel);
 
 // Edit user profile route
-router.get('/user/edit', controller.editUser);
+router.patch('/user/edit', controller.editUser);
 
 // Add user form route
 router.post('/user/addUserForm', controller.addUserForm);
+
+// Logout route
+router.get('/logout', controller.logout);
 
 module.exports = router;

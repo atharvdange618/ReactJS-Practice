@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User</title>
+</head>
+
+<body>
+    <h1>
+        <%= userData.username %>
+    </h1>
+    <h3>
+        <%= userData.usertype %>
+    </h3>
+    <img src="<%= userData.imageUrl %>" alt="Profile Picture" style="border-radius: 50%; width: 100px; height: 100px;">
+
+    <!-- Button to clear cookies and logout -->
+    <button id="logoutBtn">Logout</button>
+
+    <script>
+        document.getElementById('logoutBtn').addEventListener('click', function () {
+            // Make a GET request to logout route
+            fetch('/auth/logout', {
+                method: 'GET',
+                credentials: 'same-origin' // Include cookies in the request
+            })
+                .then(response => {
+                    if (response.redirected) {
+                        // Redirect to login page
+                        window.location.href = response.url;
+                    } else {
+                        console.error('Logout failed:', response.statusText);
+                    }
+                })
+                .catch(error => {
+                    console.error('Logout failed:', error);
+                });
+        });
+    </script>
+</body>
+
+</html>
