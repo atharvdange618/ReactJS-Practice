@@ -14,8 +14,6 @@ app.use(express.static('public'));
 app.use(cookieParser());
 
 const PORT = process.env.PORT
-// const passport = require('passport');
-// const User = require('./Model/user');
 
 // Middleware for parsing multipart/form-data (file uploads)
 app.use(fileUpload());
@@ -42,13 +40,6 @@ app.use(require('express-session')({
     resave: false,
     saveUninitialized: false
 }));
-
-// app.use(passport.initialize());
-// app.use(passport.session());
-
-// passport.use(User.createStrategy());
-// passport.serializeUser(User.serializeUser());
-// passport.deserializeUser(User.deserializeUser());
 
 app.use('/', routes); // Non-protected routes
 app.use('/auth', protectedRoutes); // Protected routes

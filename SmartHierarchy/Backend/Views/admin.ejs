@@ -4,51 +4,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin</title>
+    <title>Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            max-width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: #007bff;
+        }
+
+        h3 {
+            margin-top: 5px;
+            color: #555;
+        }
+
+        img {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            margin: 20px auto;
+            display: block;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        button {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #c82333;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>
-        <%= userData.username %>
-    </h1>
-    <h3>
-        <%= userData.usertype %>
-    </h3>
-    <img src="<%= userData.imageUrl %>" alt="Profile Picture" style="border-radius: 50%; width: 100px; height: 100px;">
-
-    <% if (userData.users) { %>
-        <ul>
-            <% userData.users.forEach(function(element) { %>
-                <li>
-                    <%= element.username %>
-                </li>
-                <% }); %>
+    <div class="container">
+        <h1>
+            <%= userData.username %>
+        </h1>
+        <h3>
+            <%= userData.usertype %>
+        </h3>
+        <img src="<%= userData.imageUrl %>" alt="Profile Picture">
+        <ul id="userList">
+            <!-- User list will be populated here -->
         </ul>
-        <% } %>
+        <button id="logoutBtn">Logout</button>
+    </div>
 
-            <!-- Button to clear cookies and logout -->
-            <button id="logoutBtn">Logout</button>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Fetch user list data when the page loads
+            fetchUserList();
+        });
 
-            <script>
-                document.getElementById('logoutBtn').addEventListener('click', function () {
-                    // Make a GET request to logout route
-                    fetch('/auth/logout', {
-                        method: 'GET',
-                        credentials: 'same-origin' // Include cookies in the request
-                    })
-                        .then(response => {
-                            if (response.redirected) {
-                                // Redirect to login page
-                                window.location.href = response.url;
-                            } else {
-                                console.error('Logout failed:', response.statusText);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Logout failed:', error);
-                        });
+        document.getElementById('logoutBtn').addEventListener('click', function () {
+            // Make a GET request to logout route
+            fetch('/auth/logout', {
+                method: 'GET',
+                credentials: 'same-origin' // Include cookies in the request
+            })
+                .then(response => {
+                    if (response.redirected) {
+                        // Redirect to login page
+                        window.location.href = response.url;
+                    } else {
+                        console.error('Logout failed:', response.statusText);
+                    }
+                })
+                .catch(error => {
+                    console.error('Logout failed:', error);
                 });
-            </script>
+        });
+
+        function fetchUserList() {
+            fetch('/auth/administrator/userlist', {
+                method: 'GET',
+                credentials: 'same-origin' // Include cookies in the request
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json(); // Parse JSON response
+                    } else {
+                        throw new Error('Failed to fetch user list');
+                    }
+                })
+                .then(data => {
+                    // Render user list
+                    renderUserList(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching user list:', error);
+                });
+        }
+
+        function renderUserList(users) {
+            const userListContainer = document.getElementById('userList');
+            userListContainer.innerHTML = ''; // Clear previous content
+
+            if (users && users.length > 0) {
+                users.forEach(user => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = user.username;
+                    userListContainer.appendChild(listItem);
+                });
+            } else {
+                const noUsersMessage = document.createElement('p');
+                noUsersMessage.textContent = 'No users found.';
+                userListContainer.appendChild(noUsersMessage);
+            }
+        }
+    </script>
 </body>
 
 </html>

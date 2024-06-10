@@ -1,4 +1,5 @@
 // controller.js
+const User = require('../Model/user');
 
 // Function to handle access to administrator panel
 exports.adminPanel = (req, res) => {
@@ -14,8 +15,21 @@ exports.adminPanel = (req, res) => {
 
 // Function to get user list (assuming this retrieves users from the database)
 exports.getUserList = async (req, res) => {
-    const userList = await User.find();
-    res.json(userList);
+    try {
+        // Check if the user making the request is an administrator
+        if (req.session.user.usertype !== 'admin') {
+            return res.status(403).json({ message: 'Forbidden: Only administrators can access this resource' });
+        }
+
+        // Fetch the list of users from the database
+        const users = await User.find({}, { password: 0 }); // Exclude password field from the results
+
+        // Return the list of users in the response
+        res.status(200).json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while fetching the user list' });
+    }
 };
 
 // Function to handle access to user tree (assuming this retrieves user tree data)
