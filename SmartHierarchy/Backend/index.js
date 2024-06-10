@@ -46,4 +46,4 @@ app.use('/auth', protectedRoutes); // Protected routes
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)
-})
+})  

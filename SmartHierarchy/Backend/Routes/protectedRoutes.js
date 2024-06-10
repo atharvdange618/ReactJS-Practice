@@ -1,33 +1,48 @@
-const express = require('express');
-const router = express.Router();
-const { verifyToken } = require('../Middleware/auth');
-const controller = require('../Controller/controller');
+const express = require('express')
+const router = express.Router()
+const { verifyToken } = require('../Middleware/auth')
+const adminController = require('../Controller/adminController')
+const userController = require('../Controller/userController')
 
 // Apply JWT token verification middleware to all routes in this file
 router.use(verifyToken);
 
 // Administrator panel route
-router.get('/administrator', controller.adminPanel);
+router.get('/administrator', adminController.adminPanel);
 
 // User list route
-router.get('/administrator/userlist', controller.getUserList);
+router.get('/administrator/userlist', adminController.getUserList);
 
 // User tree route
-router.get('/administrator/user/tree', controller.userTree);
+router.get('/administrator/user/tree', adminController.userTree);
 
 // Edit administrator profile route
-router.patch('/administrator/edit', controller.editAdministrator);
+router.patch('/administrator/edit', adminController.editAdministrator);
+
+router.delete('/administrator/delete/:username', adminController.deleteUser)
 
 // User panel route
-router.get('/user', controller.userPanel);
+router.get('/user', userController.userPanel);
 
 // Edit user profile route
-router.patch('/user/edit', controller.editUser);
+router.patch('/user/edit', userController.editUser);
 
 // Add user form route
-router.post('/user/addUserForm', controller.addUserForm);
+router.post('/user/addUserForm', userController.addUserForm);
 
 // Logout route
-router.get('/logout', controller.logout);
+router.get('/logout', (req, res) => {
+    // Destroy the session
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error destroying session:', err);
+        }
+        // Clear authentication token (JWT) cookie
+        res.clearCookie('connect.sid');
+        res.clearCookie('uid');
+        // Redirect to login page
+        res.redirect('/login');
+    });
+});
 
 module.exports = router;
