@@ -51,7 +51,51 @@ exports.editUser = async (req, res) => {
 };
 
 // Function to handle adding a new user form
-exports.addUserForm = async (req, res) => {
-    // Logic to handle adding a new user form
-    res.send('New user form added');
-};
+exports.addNewUser = async (req, res) => {
+    const { newUsername, newName, newEmail, newPassword, addedByUsername } = req.body;
+
+    try {
+        // Check if the user adding the new user exists
+        const addedByUser = await User.findOne({ username: addedByUsername });
+        if (!addedByUser) {
+            return res.status(404).json({ message: 'User adding the new user not found' });
+        }
+
+        // Check if the user already exists
+        const existingUser = await User.findOne({ username: newUsername });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Username already exists' });
+        }
+
+        // Generate a salt
+        const saltRounds = 10;
+        const salt = await bcrypt.genSalt(saltRounds);
+
+        // Hash the password with the generated salt
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Create a new user object
+        const newUser = new User({
+            username: newUsername,
+            name: newName,
+            email: newEmail,
+            password: hashedPassword,
+            usertype: 'user',
+            addedAt: Date.now(),
+            addedBy: addedByUser._id // Reference to the user who added this new user
+        });
+
+        // Save the new user to the database
+        await newUser.save();
+
+        // Update the addedByUser to increment the userAdded count
+        addedByUser.usersAdded.push(newUser._id);
+        await addedByUser.save();
+
+        // Send response indicating success
+        res.status(201).json({ message: 'User registered successfully' });
+    } catch (error) {
+        console.error('Error registering user:', error);
+        res.status(500).json({ message: 'Failed to register user' });
+    }
+}

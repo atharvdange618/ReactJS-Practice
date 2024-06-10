@@ -131,6 +131,7 @@
 
 <body>
     <div class="container">
+        <!-- User profile information -->
         <h1>
             <%= userData.username %>
         </h1>
@@ -140,6 +141,8 @@
         <img src="<%= userData.imageUrl %>" alt="Profile Picture">
         <button id="editProfileBtn">Edit Profile</button>
         <button id="logoutBtn">Logout</button>
+        <!-- Button to add new user -->
+        <button id="addUserBtn">Add New User</button>
     </div>
 
     <!-- The Modal -->
@@ -176,10 +179,43 @@
         </div>
     </div>
 
+    <!-- Modal for adding a new user -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form id="addUserForm">
+                <!-- Hidden field to store the username of the user adding the new user -->
+                <input type="hidden" id="addedByUsername" name="addedByUsername" value="<%= userData.username %>">
+                <!-- Form fields for new user registration -->
+                <div>
+                    <label for="newUsername">Username:</label>
+                    <input type="text" id="newUsername" name="newUsername" required>
+                </div>
+                <div>
+                    <label for="newName">Name:</label>
+                    <input type="text" id="newName" name="newName" required>
+                </div>
+                <div>
+                    <label for="newPassword">Password:</label>
+                    <input type="password" id="newPassword" name="newPassword">
+                </div>
+                <div>
+                    <label for="newEmail">Email:</label>
+                    <input type="email" id="newEmail" name="newEmail" required>
+                </div>
+                <!-- Add other fields as required -->
+                <button type="submit">Register User</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         const editProfileBtn = document.getElementById('editProfileBtn');
         const modal = document.getElementById('editProfileModal');
         const closeBtn = document.querySelector('.close');
+        const addUserModal = document.getElementById('addUserModal');
+        const addUserBtn = document.getElementById('addUserBtn');
+        const closeButton = addUserModal.querySelector('.close');
 
         editProfileBtn.onclick = function () {
             modal.style.display = 'flex';
@@ -242,6 +278,53 @@
                 .catch(error => {
                     console.error('Error updating profile:', error);
                     alert('Failed to update profile: ' + error.message);
+                });
+        });
+
+        // Show modal when "Add New User" button is clicked
+        addUserBtn.addEventListener('click', function () {
+            addUserModal.style.display = 'flex';
+        });
+
+        // Hide modal when close button is clicked
+        closeButton.addEventListener('click', function () {
+            addUserModal.style.display = 'none';
+        });
+
+        // Hide modal when user clicks outside of it
+        window.onclick = function (event) {
+            if (event.target == addUserModal) {
+                addUserModal.style.display = 'none';
+            }
+        };
+
+        // Handle form submission for adding a new user
+        const addUserForm = document.getElementById('addUserForm');
+        addUserForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Create FormData object from form
+            const formData = new FormData(addUserForm);
+
+            // Send form data to server for processing
+            fetch('/auth/user/addNewUser', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin' // Include cookies in the request
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('User registered successfully');
+                        window.location.reload(); // Reload the page to reflect changes
+                    } else {
+                        return response.json().then(data => {
+                            throw new Error(data.message);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error registering user:', error);
+                    alert('Failed to register user: ' + error.message);
                 });
         });
     </script>

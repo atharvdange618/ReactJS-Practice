@@ -36,7 +36,8 @@ const userSchema = new Schema({
     },
     imageUrl: {
         type: String,
-        required: true
+        required: true,
+        default: "no image provided"
     },
     addedAt: {
         type: Date,
@@ -45,6 +46,19 @@ const userSchema = new Schema({
     addedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
+    },
+    usersAdded: {
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        }],
+        validate: {
+            validator: function (value) {
+                // Check if the number of users added is less than or equal to 3
+                return value.length <= 3;
+            },
+            message: 'You can only add up to 3 users.'
+        }
     }
 });
 

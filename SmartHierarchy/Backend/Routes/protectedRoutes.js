@@ -28,7 +28,7 @@ router.get('/user', userController.userPanel);
 router.patch('/user/edit', userController.editUser);
 
 // Add user form route
-router.post('/user/addUserForm', userController.addUserForm);
+router.post('/user/addNewUser', userController.addNewUser);
 
 // Logout route
 router.get('/logout', (req, res) => {
