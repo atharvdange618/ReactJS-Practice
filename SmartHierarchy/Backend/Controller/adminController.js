@@ -7,12 +7,12 @@ exports.adminPanel = (req, res) => {
     // Retrieve user data from session
     const userData = req.session.user;
     if (userData) {
-        res.render('admin', { userData }); // Pass userData as an object
+        res.json(userData); // Send userData as JSON
     } else {
         // Handle case where user data is not available
-        res.status(404).send('User data not found');
-    };
-}
+        res.status(404).json({ message: 'User data not found' });
+    }
+};
 
 // Function to get user list (assuming this retrieves users from the database)
 exports.getUserList = async (req, res) => {

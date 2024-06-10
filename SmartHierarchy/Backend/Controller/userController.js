@@ -7,12 +7,12 @@ exports.userPanel = (req, res) => {
     // Retrieve user data from session
     const userData = req.session.user;
     if (userData) {
-        res.render('user', { userData }); // Pass userData as an object
+        res.json(userData); // Send userData as JSON
     } else {
         // Handle case where user data is not available
-        res.status(404).send('User data not found');
-    };
-}
+        res.status(404).json({ message: 'User data not found' });
+    }
+};
 
 // Function to handle editing user profile
 exports.editUser = async (req, res) => {
@@ -98,4 +98,4 @@ exports.addNewUser = async (req, res) => {
         console.error('Error registering user:', error);
         res.status(500).json({ message: 'Failed to register user' });
     }
-}
+};

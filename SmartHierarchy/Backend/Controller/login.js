@@ -11,20 +11,20 @@ module.exports = async (req, res) => {
             const same = await bcrypt.compare(password, hashedPassword);
             if (same) {
                 const token = generateToken(user);
-                const cookieOptions = {
-                    httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-                    secure: req.secure || req.headers['x-forwarded-proto'] === 'https', // Ensures the cookie is only sent over HTTPS
-                }
-                res.cookie("uid", token, cookieOptions);
+                const responseData = {
+                    username,
+                    usertype,
+                    imageUrl,
+                    token // Include token in the response data
+                };
+
+                // Respond with JSON data instead of redirecting
                 if (usertype === 'admin') {
                     const users = await User.find({}, { password: 0 });
-                    // Store user data in session
-                    req.session.user = { username, usertype, imageUrl, users };
-                    res.redirect('/auth/administrator');
+                    responseData.users = users; // Include users data in the response for admin
+                    res.status(200).json(responseData);
                 } else {
-                    // Store user data in session
-                    req.session.user = { username, usertype, imageUrl };
-                    res.redirect('/auth/user');
+                    res.status(200).json(responseData);
                 }
             } else {
                 res.status(401).json({ message: 'Invalid password' });
@@ -34,6 +34,6 @@ module.exports = async (req, res) => {
         }
     } catch (error) {
         console.error(error);
-        res.status(500).send('An error occurred during login.');
+        res.status(500).json({ message: 'An error occurred during login.' });
     }
 }
