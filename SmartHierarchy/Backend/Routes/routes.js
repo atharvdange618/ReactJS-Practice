@@ -5,17 +5,20 @@ const registerRouter = require('../Controller/register');
 const loginRouter = require('../Controller/login');
 
 router.get("/", (req, res) => {
+    res.send("Home page")
     console.log("Request on backend")
 });
 
 router.get('/register', (req, res) => {
-    res.render('register');
+    res.send("Register page")
+    console.log("Request for registration")
 });
 
 router.post('/register', registerRouter);
 
 router.get('/login', (req, res) => {
-    res.render('login');
+    res.send("Login page")
+    console.log("Request for login")
 });
 
 router.post('/login', loginRouter);
