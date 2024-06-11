@@ -5,7 +5,7 @@ const registerRouter = require('../Controller/register');
 const loginRouter = require('../Controller/login');
 
 router.get("/", (req, res) => {
-    res.render('index');
+    console.log("Request on backend")
 });
 
 router.get('/register', (req, res) => {
