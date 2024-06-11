@@ -89,6 +89,25 @@ exports.deleteUser = async (req, res) => {
 
 // Function to handle access to user tree (assuming this retrieves user tree data)
 exports.userTree = async (req, res) => {
-    // Logic to retrieve and render user tree data
-    res.send('User tree');
-};
+    const { username } = req.params;
+    try {
+        const user = await User.findOne({ username }).populate('usersAdded').exec();
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const buildTree = (user) => {
+            return {
+                id: user._id,
+                username: user.username,
+                profilePic: user.imageUrl,
+                children: user.usersAdded.map(buildTree)
+            };
+        };
+
+        const userTree = buildTree(user);
+        res.json({ username: user.username, tree: [userTree] });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+}

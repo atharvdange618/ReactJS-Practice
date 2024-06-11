@@ -28,7 +28,7 @@ app.set("view engine", 'ejs')
 
 // Use CORS middleware with custom options
 app.use(cors({
-    origin: 'https://mlm-lifewinner.onrender.com',
+    origin: 'http://localhost:5173',
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true // Allows cookies to be sent with requests

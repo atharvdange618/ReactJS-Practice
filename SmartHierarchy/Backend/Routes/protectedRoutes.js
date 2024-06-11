@@ -14,7 +14,7 @@ router.get('/administrator', adminController.adminPanel);
 router.get('/administrator/userlist', adminController.getUserList);
 
 // User tree route
-router.get('/administrator/user/tree', adminController.userTree);
+router.get('/administrator/usertree', adminController.userTree);
 
 // Edit administrator profile route
 router.patch('/administrator/edit', adminController.editAdministrator);
@@ -29,6 +29,9 @@ router.patch('/user/edit', userController.editUser);
 
 // Add user form route
 router.post('/user/addNewUser', userController.addNewUser);
+
+// User route for usertree
+router.get('/user/usertree', userController.userTree);
 
 // Logout route
 router.get('/logout', (req, res) => {

@@ -99,3 +99,27 @@ exports.addNewUser = async (req, res) => {
         res.status(500).json({ message: 'Failed to register user' });
     }
 };
+
+exports.userTree = async (req, res) => {
+    const { username } = req.params;
+    try {
+        const user = await User.findOne({ username }).populate('usersAdded').exec();
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const buildTree = (user) => {
+            return {
+                id: user._id,
+                username: user.username,
+                profilePic: user.imageUrl,
+                children: user.usersAdded.map(buildTree)
+            };
+        };
+
+        const userTree = buildTree(user);
+        res.json({ username: user.username, tree: [userTree] });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+}
