@@ -1,0 +1,62 @@
+.Profile-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.Profile-container h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.Profile-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.Profile-container span {
+    font-size: 1.2rem;
+    color: #777;
+}
+
+.Profile-container .List {
+    list-style-type: none;
+    padding: 0;
+    text-align: left;
+}
+
+.Profile-container .List-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.Profile-container .List-item:last-child {
+    border-bottom: none;
+}
+
+.Profile-container .List-item field {
+    font-weight: bold;
+    color: #555;
+}
+
+.Profile-container .List-item value {
+    color: #333;
+}
+
+.Profile-container a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.Profile-container a:hover {
+    text-decoration: underline;
+}
