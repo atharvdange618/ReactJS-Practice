@@ -30,7 +30,7 @@ app.set("view engine", 'ejs')
 
 // Use CORS middleware with custom options
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: process.env.FRONTEND_URL,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true // Allows cookies to be sent with requests
