@@ -1,33 +1,36 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Toaster, toast } from 'react-hot-toast';
 
 const UserTable = ({ users, onSelectUser }) => {
-    const handleDelete = (username) => {
+    const handleDelete = async (username) => {
         if (!window.confirm(`Are you sure you want to delete ${username}?`)) {
             return;
         }
 
-        fetch(`/api/auth/administrator/delete/${username}`, {
-            method: 'DELETE',
-            credentials: 'same-origin'
-        })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(data => { throw new Error(data.message); });
-                }
-                return response.json();
-            })
-            .then(data => {
-                alert(data.message);
-            })
-            .catch(error => {
-                console.error('Error deleting user:', error);
-                alert('Failed to delete user: ' + error.message);
+        try {
+            const response = await fetch(`/api/auth/administrator/delete/${username}`, {
+                method: 'DELETE',
+                credentials: 'same-origin'
             });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message);
+            }
+
+            const data = await response.json();
+            toast.success(data.message);
+            window.location.reload();
+        } catch (error) {
+            toast.error('Failed to delete user: ' + error.message);
+        }
     };
+
 
     return (
         <table className="table-auto w-full border-collapse border border-gray-200 mt-4">
+            <Toaster />
             <thead>
                 <tr>
                     <th className="border border-gray-200 p-2 bg-gray-100">Username</th>

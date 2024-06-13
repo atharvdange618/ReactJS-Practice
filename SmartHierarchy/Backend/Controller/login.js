@@ -7,25 +7,17 @@ module.exports = async (req, res) => {
     try {
         const user = await User.findOne({ username });
         if (user) {
-            const { username, usertype, password: hashedPassword, imageUrl } = user;
+            const { username, usertype, password: hashedPassword } = user;
             const same = await bcrypt.compare(password, hashedPassword);
             if (same) {
                 const token = generateToken(user);
                 const responseData = {
                     username,
                     usertype,
-                    imageUrl,
                     token // Include token in the response data
                 };
 
-                // Respond with JSON data instead of redirecting
-                if (usertype === 'admin') {
-                    const users = await User.find({}, { password: 0 });
-                    responseData.users = users; // Include users data in the response for admin
-                    res.status(200).json(responseData);
-                } else {
-                    res.status(200).json(responseData);
-                }
+                res.status(200).json(responseData);
             } else {
                 res.status(401).json({ message: 'Invalid password' });
             }

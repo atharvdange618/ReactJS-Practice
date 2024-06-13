@@ -14,13 +14,12 @@ const Login = () => {
         try {
             const response = await axios.post('/api/login', { username, password });
             if (response.status === 200) {
-                console.log(response)
-                const { token, username, usertype, imageUrl, users } = response.data;
-                Cookies.set('token', token, { expires: 1 });// Store JWT token
+                const { token, username, usertype } = response.data;
+                Cookies.set('token', token, { expires: 1 });
                 if (usertype === "user") {
-                    navigate('/auth/user', { state: { username, usertype, imageUrl } });
+                    navigate('/auth/user', { state: { username } });
                 } else if (usertype === 'admin') {
-                    navigate('/auth/administrator', { state: { username, usertype, imageUrl, users } });
+                    navigate('/auth/administrator', { state: { username } });
                 }
             } else {
                 // Handle specific HTTP errors

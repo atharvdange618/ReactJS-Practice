@@ -3,7 +3,9 @@ import ProfileModal from '../ProfileModal/ProfileModal';
 import { useNavigate, useLocation } from 'react-router-dom';
 import UserTable from '../UserTable/UserTable';
 import Cookies from 'js-cookie';
-import { toast, Toaster } from 'react-hot-toast'
+import { toast, Toaster } from 'react-hot-toast';
+import Hierarchy from '../Hierarchy/Hierarchy';
+import axios from 'axios'
 
 const Admin = () => {
     const [isModalOpen, setModalOpen] = useState(false);
@@ -18,6 +20,17 @@ const Admin = () => {
     const openModal = () => setModalOpen(true);
     const closeModal = () => setModalOpen(false);
 
+    const fetchUserList = async () => {
+        try {
+            const response = await axios.get('/api/auth/administrator/userlist');
+            const data = response.data;
+            setUsers(data);
+        } catch (error) {
+            console.error('Error fetching user list:', error);
+            toast.error('Error fetching user list');
+        }
+    };
+
     const handleSelectUser = (username) => {
         fetch(`/api/userTree/${username}`)
             .then(response => response.json())
@@ -29,16 +42,39 @@ const Admin = () => {
     };
 
     useEffect(() => {
-        const { username, usertype, imageUrl, users } = location.state || {};
-        setUsername(username);
-        setUsertype(usertype);
-        setImageUrl(imageUrl);
-        setUsers(users || []);
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch(`/api/auth/administrator/${location.state.username}`, {
+                    method: 'GET',
+                    credentials: 'same-origin'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+
+                const data = await response.json();
+                setUsername(data.username);
+                setUsertype(data.usertype);
+                setImageUrl(data.imageUrl);
+            } catch (error) {
+                toast.error('Error fetching user data:', error);
+            }
+        };
+
+        if (location.state && location.state.username) {
+            fetchUserData();
+        }
     }, [location.state]);
 
+    useEffect(() => {
+        fetchUserList();
+    }, []);
+
     const handleLogout = () => {
-        toast.success("Logged out")
+        toast.success("Logged out");
         Cookies.remove('token');
+        window.location.reload()
         navigate('/login');
     };
 

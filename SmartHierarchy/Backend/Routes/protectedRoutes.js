@@ -4,8 +4,7 @@ const { verifyToken } = require('../Middleware/auth')
 const adminController = require('../Controller/adminController')
 const userController = require('../Controller/userController')
 
-// Apply JWT token verification middleware to all routes in this file
-router.use(verifyToken);
+// router.use(verifyToken)
 
 // Administrator panel route
 router.get('/administrator', adminController.adminPanel);
@@ -14,15 +13,22 @@ router.get('/administrator', adminController.adminPanel);
 router.get('/administrator/userlist', adminController.getUserList);
 
 // User tree route
-router.get('/administrator/usertree', adminController.userTree);
+router.get('/administrator/usertree/:username', adminController.userTree);
 
 // Edit administrator profile route
 router.patch('/administrator/edit', adminController.editAdministrator);
 
-router.delete('/administrator/delete/:username', adminController.deleteUser)
+// Delete user route
+router.delete('/administrator/delete/:username', adminController.deleteUser);
+
+// Get Admin Data
+router.get('/administrator/:username', adminController.getAdminData);
 
 // User panel route
 router.get('/user', userController.userPanel);
+
+// Get User Data
+router.get("/user/:username", userController.getUserData)
 
 // Edit user profile route
 router.patch('/user/edit', userController.editUser);

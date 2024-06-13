@@ -4,28 +4,18 @@ const User = require('../Model/user');
 
 // Function to handle access to administrator panel
 exports.adminPanel = (req, res) => {
-    // Retrieve user data from session
     const userData = req.session.user;
     if (userData) {
-        res.json(userData); // Send userData as JSON
+        res.json(userData);
     } else {
-        // Handle case where user data is not available
         res.status(404).json({ message: 'User data not found' });
     }
 };
 
-// Function to get user list (assuming this retrieves users from the database)
+// Function to get user list
 exports.getUserList = async (req, res) => {
     try {
-        // Check if the user making the request is an administrator
-        if (req.session.user.usertype !== 'admin') {
-            return res.status(403).json({ message: 'Forbidden: Only administrators can access this resource' });
-        }
-
-        // Fetch the list of users from the database
-        const users = await User.find({}, { password: 0 }); // Exclude password field from the results
-
-        // Return the list of users in the response
+        const users = await User.find({}, { password: 0 });
         res.status(200).json(users);
     } catch (error) {
         console.error(error);
@@ -36,16 +26,14 @@ exports.getUserList = async (req, res) => {
 // Function to handle editing administrator profile
 exports.editAdministrator = async (req, res) => {
     const userId = req.user.id;
-    const { name, email, address, usertype } = req.body;
+    const { name, email, address, usertype, password } = req.body;
     let updateData = { name, email, address, usertype };
 
     try {
-        // Handle profile picture upload
         if (req.files && req.files.profilepic) {
             const profilePic = req.files.profilepic;
             const uploadPath = path.join(__dirname, '../public/images/uploads/', profilePic.name);
 
-            // Save the file to the uploads directory
             profilePic.mv(uploadPath, (err) => {
                 if (err) {
                     console.error(err);
@@ -54,12 +42,11 @@ exports.editAdministrator = async (req, res) => {
             });
 
             const imageUrl = `http://localhost:3000/images/uploads/${profilePic.name}`;
-
             updateData.imageUrl = imageUrl;
         }
 
-        if (req.body.password) {
-            const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10);
             updateData.password = hashedPassword;
         }
 
@@ -71,11 +58,10 @@ exports.editAdministrator = async (req, res) => {
     }
 };
 
+// Function to delete a user
 exports.deleteUser = async (req, res) => {
     try {
-        const username = req.params.username;
-
-        // Find and delete the user by username
+        const { username } = req.params;
         const user = await User.findOneAndDelete({ username });
 
         if (!user) {
@@ -89,7 +75,7 @@ exports.deleteUser = async (req, res) => {
     }
 };
 
-// Function to handle access to user tree (assuming this retrieves user tree data)
+// Function to handle access to user tree
 exports.userTree = async (req, res) => {
     const { username } = req.params;
     try {
@@ -98,18 +84,40 @@ exports.userTree = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const buildTree = (user) => {
-            return {
-                id: user._id,
-                username: user.username,
-                profilePic: user.imageUrl,
-                children: user.usersAdded.map(buildTree)
-            };
-        };
+        const buildTree = (user) => ({
+            id: user._id,
+            username: user.username,
+            profilePic: user.imageUrl,
+            children: user.usersAdded.map(buildTree)
+        });
 
         const userTree = buildTree(user);
         res.json({ username: user.username, tree: [userTree] });
     } catch (error) {
+        console.error('Error fetching user tree:', error);
         res.status(500).json({ message: 'Server error' });
     }
-}
+};
+
+// Function to get admin data
+exports.getAdminData = async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        const userdata = await User.findOne({ username });
+
+        if (userdata.usertype === 'user') {
+            return res.json({ message: "this user is not admin" })
+        }
+
+        if (!userdata) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const { username: foundUsername, usertype, imageUrl } = userdata;
+        res.status(200).json({ username: foundUsername, usertype, imageUrl });
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        res.status(500).json({ message: 'Failed to fetch user data' });
+    }
+};
