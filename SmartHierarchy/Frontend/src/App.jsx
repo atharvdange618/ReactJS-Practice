@@ -1,25 +1,29 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Navbar from './Components/Navbar/Navbar';
 import Home from './Components/Home/Home';
 import Register from './Components/Register/Register';
 import Login from './Components/Login/Login';
 import Admin from './Components/Admin/Admin';
 import UserProfile from './Components/User/UserProfile';
+import Cookies from 'js-cookie';
 import './App.css'
 
 const App = () => {
-  const mockUserData = {
-    username: 'admin',
-    usertype: 'admin',
-    imageUrl: 'https://via.placeholder.com/100',
-    name: 'Admin Name',
-    email: 'admin@example.com',
-    address: '123 Admin St',
-    users: [
-      { username: 'user1', status: 'active' },
-      { username: 'user2', status: 'inactive' }
-    ]
+
+  // Function to check if token exists
+  const isAuthenticated = () => {
+    const token = Cookies.get('token'); 
+    return !!token;
+  };
+
+  // Protected Route Component
+  const AuthenticatedRoute = ({ element, ...rest }) => {
+    return isAuthenticated() ? (
+      element
+    ) : (
+      <Navigate to="/login" state={{ from: rest.location }} replace />
+    );
   };
 
   return (
@@ -31,8 +35,10 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/auth/administrator" element={<Admin userData={mockUserData} />} />
-          <Route path="/auth/user" element={<UserProfile userData={mockUserData} />} />
+
+          {/* Protected routes */}
+          <Route path="/auth/administrator" element={<AuthenticatedRoute element={<Admin />} />} />
+          <Route path="/auth/user" element={<AuthenticatedRoute element={<UserProfile />} />} />
         </Routes>
       </div>
     </Router>

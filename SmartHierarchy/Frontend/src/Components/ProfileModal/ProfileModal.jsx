@@ -1,4 +1,5 @@
 import React from 'react';
+import { toast, Toaster } from 'react-hot-toast'
 
 const ProfileModal = ({ isOpen, onClose, userData }) => {
     if (!isOpen) return null;
@@ -10,18 +11,18 @@ const ProfileModal = ({ isOpen, onClose, userData }) => {
         const password = formData.get('password');
         const confirmPassword = formData.get('confirmPassword');
         if (password && password !== confirmPassword) {
-            alert('Passwords do not match');
+            toast.error('Passwords do not match');
             return;
         }
 
-        fetch('/auth/administrator/edit', {
+        fetch('/api/auth/administrator/edit', {
             method: 'PATCH',
             credentials: 'same-origin',
             body: formData
         })
             .then(response => {
                 if (response.ok) {
-                    alert('Profile updated successfully');
+                    toast.success('Profile updated successfully');
                     window.location.reload();
                 } else {
                     return response.json().then(data => { throw new Error(data.message); });
@@ -29,12 +30,13 @@ const ProfileModal = ({ isOpen, onClose, userData }) => {
             })
             .catch(error => {
                 console.error('Error updating profile:', error);
-                alert('Failed to update profile: ' + error.message);
+                toast.error('Failed to update profile: ' + error.message);
             });
     };
 
     return (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+            <Toaster />
             <div className="bg-white p-8 rounded shadow-md w-4/5 md:w-1/2 lg:w-1/3">
                 <span className="float-right text-gray-600 text-2xl cursor-pointer" onClick={onClose}>&times;</span>
                 <form onSubmit={handleSubmit} encType="multipart/form-data">

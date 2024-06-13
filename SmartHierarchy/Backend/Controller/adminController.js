@@ -53,7 +53,9 @@ exports.editAdministrator = async (req, res) => {
                 }
             });
 
-            updateData.imageUrl = `/images/uploads/${profilePic.name}`;
+            const imageUrl = `http://localhost:3000/images/uploads/${profilePic.name}`;
+
+            updateData.imageUrl = imageUrl;
         }
 
         if (req.body.password) {

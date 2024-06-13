@@ -14,7 +14,7 @@ const generateToken = (user, options = {}) => {
 };
 
 const verifyToken = (req, res, next) => {
-    const token = req.cookies.uid; // Extract token from the 'uid' cookie
+    const token = req.cookies.token; // Extract token from the 'uid' cookie
 
     if (!token) {
         return res.status(401).json({ message: 'Unauthorized: Token missing' });

@@ -17,6 +17,8 @@ const PORT = process.env.PORT
 
 // Middleware for parsing multipart/form-data (file uploads)
 app.use(fileUpload());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());

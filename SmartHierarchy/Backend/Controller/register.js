@@ -22,19 +22,19 @@ const moveUploadedFile = (file, targetPath) => {
     });
 };
 
-const validateUserData = ({ username, name, email, password, confirm_password, address, usertype }) => {
-    if (!username || !name || !email || !password || !confirm_password || !address || !usertype) {
+const validateUserData = ({ username, name, email, password, confirmPassword, address, usertype }) => {
+    if (!username || !name || !email || !password || !confirmPassword || !address || !usertype) {
         throw new Error('All fields are required');
     }
-    if (password !== confirm_password) {
+    if (password !== confirmPassword) {
         throw new Error('Passwords do not match');
     }
 };
 
 module.exports = async (req, res) => {
     try {
-        const { username, name, email, password, confirm_password, address, usertype } = req.body;
-        const { profilepic } = req.files;
+        const { username, name, email, password, confirmPassword, address, usertype } = req.body;
+        const profilepic = req.files.profilepic;
 
         // Validate user input
         validateUserData(req.body);
@@ -67,7 +67,7 @@ module.exports = async (req, res) => {
         });
 
         // Respond with the user data (excluding password)
-        res.json({ username, name, email, address, usertype, imageUrl });
+        res.status(201).json({ username, name, email, address, usertype, imageUrl });
 
     } catch (error) {
         console.error('Error during registration:', error);

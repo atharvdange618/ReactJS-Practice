@@ -7,7 +7,7 @@ const UserTable = ({ users, onSelectUser }) => {
             return;
         }
 
-        fetch(`/auth/administrator/delete/${username}`, {
+        fetch(`/api/auth/administrator/delete/${username}`, {
             method: 'DELETE',
             credentials: 'same-origin'
         })

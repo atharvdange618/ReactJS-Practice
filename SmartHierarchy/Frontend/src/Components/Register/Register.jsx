@@ -42,23 +42,25 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         const data = new FormData();
         for (const key in formData) {
             data.append(key, formData[key]);
         }
 
         try {
-            const response = await axios.post('/register', data, {
+            const response = await axios.post('/api/register', data, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
 
-            if (response.data.success) {
-                toast.success("Registration Successful !")
-                navigate('/login');
-            } else {
-                toast.error('Registration failed. Please check your details.');
+            if (response.status === 201) { // User created successfully
+                toast.success("User created successfully");
+                navigate('/login')
+            } else if (!response.ok) {
+                const userReg = await response.json();
+                toast.error(userReg.message);
             }
         } catch (error) {
             toast.error('An error occurred. Please try again.');

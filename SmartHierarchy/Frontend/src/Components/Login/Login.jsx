@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import { toast, Toaster } from 'react-hot-toast'
 
 const Login = () => {
@@ -11,12 +12,25 @@ const Login = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios.post('/login', { username, password });
-            if (response.data.success) {
-                toast.success("Login Successful !")
-                navigate('/auth/administrator');
+            const response = await axios.post('/api/login', { username, password });
+            if (response.status === 200) {
+                console.log(response)
+                const { token, username, usertype, imageUrl, users } = response.data;
+                Cookies.set('token', token, { expires: 1 });// Store JWT token
+                if (usertype === "user") {
+                    navigate('/auth/user', { state: { username, usertype, imageUrl } });
+                } else if (usertype === 'admin') {
+                    navigate('/auth/administrator', { state: { username, usertype, imageUrl, users } });
+                }
             } else {
-                toast.error('Login failed. Please check your username and password.');
+                // Handle specific HTTP errors
+                if (response.status === 401) {
+                    // Unauthorized: Invalid credentials
+                    toast.error('Invalid username or password. Please try again.');
+                } else {
+                    // Other HTTP errors
+                    toast.error('An unexpected error occurred. Please try again later.');
+                }
             }
         } catch (error) {
             toast.error('An error occurred. Please try again.');

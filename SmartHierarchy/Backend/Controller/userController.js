@@ -33,8 +33,9 @@ exports.editUser = async (req, res) => {
                     return res.status(500).json({ message: 'Failed to upload profile picture' });
                 }
             });
+            const imageUrl = `http://localhost:3000/images/uploads/${profilePic.name}`;
 
-            updateData.imageUrl = `/images/uploads/${profilePic.name}`;
+            updateData.imageUrl = imageUrl;
         }
 
         if (req.body.password) {

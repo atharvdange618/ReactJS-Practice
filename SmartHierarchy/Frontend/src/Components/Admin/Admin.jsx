@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import ProfileModal from '../ProfileModal/ProfileModal';
+import { useNavigate, useLocation } from 'react-router-dom';
 import UserTable from '../UserTable/UserTable';
+import Cookies from 'js-cookie';
+import { toast, Toaster } from 'react-hot-toast'
 
-const Admin = ({ userData }) => {
+const Admin = () => {
     const [isModalOpen, setModalOpen] = useState(false);
     const [selectedUserTree, setSelectedUserTree] = useState(null);
+    const [username, setUsername] = useState("");
+    const [usertype, setUsertype] = useState("");
+    const [imageUrl, setImageUrl] = useState("");
+    const [users, setUsers] = useState([]);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const openModal = () => setModalOpen(true);
     const closeModal = () => setModalOpen(false);
@@ -15,31 +24,31 @@ const Admin = ({ userData }) => {
             .then(data => setSelectedUserTree(data))
             .catch(error => {
                 console.error('Error fetching user tree:', error);
-                alert('Failed to load user tree');
+                toast.error('Failed to load user tree');
             });
     };
 
+    useEffect(() => {
+        const { username, usertype, imageUrl, users } = location.state || {};
+        setUsername(username);
+        setUsertype(usertype);
+        setImageUrl(imageUrl);
+        setUsers(users || []);
+    }, [location.state]);
+
     const handleLogout = () => {
-        fetch('/auth/logout', {
-            method: 'GET',
-            credentials: 'same-origin'
-        })
-            .then(response => {
-                if (response.redirected) {
-                    window.location.href = response.url;
-                } else {
-                    console.error('Logout failed:', response.statusText);
-                }
-            })
-            .catch(error => console.error('Logout failed:', error));
+        toast.success("Logged out")
+        Cookies.remove('token');
+        navigate('/login');
     };
 
     return (
         <div className="container mx-auto bg-white p-8 rounded shadow-md text-center">
-            <h1 className="text-2xl font-bold mb-2">{userData.username}</h1>
-            <h3 className="text-lg mb-4">{userData.usertype}</h3>
+            <Toaster />
+            <h1 className="text-2xl font-bold mb-2">{username}</h1>
+            <h3 className="text-lg mb-4">{usertype}</h3>
             <img
-                src={userData.imageUrl}
+                src={imageUrl}
                 alt="Profile"
                 className="rounded-full w-24 h-24 mx-auto mb-4"
             />
@@ -49,9 +58,9 @@ const Admin = ({ userData }) => {
             <button onClick={handleLogout} className="bg-blue-500 text-white px-4 py-2 rounded mb-4">
                 Logout
             </button>
-            {userData.users && userData.users.length > 0 ? (
+            {users.length > 0 ? (
                 <>
-                    <UserTable users={userData.users} onSelectUser={handleSelectUser} />
+                    <UserTable users={users} onSelectUser={handleSelectUser} />
                     {selectedUserTree && (
                         <div>
                             <h2>{selectedUserTree.username}'s User Tree</h2>
@@ -62,7 +71,7 @@ const Admin = ({ userData }) => {
             ) : (
                 <p>No users found.</p>
             )}
-            <ProfileModal isOpen={isModalOpen} onClose={closeModal} userData={userData} />
+            <ProfileModal isOpen={isModalOpen} onClose={closeModal} userData={{ username, usertype, imageUrl, users }} />
         </div>
     );
 };
