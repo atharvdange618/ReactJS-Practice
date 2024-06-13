@@ -4,7 +4,7 @@ const { verifyToken } = require('../Middleware/auth')
 const adminController = require('../Controller/adminController')
 const userController = require('../Controller/userController')
 
-// router.use(verifyToken)
+router.use(verifyToken)
 
 // Administrator panel route
 router.get('/administrator', adminController.adminPanel);
